@@ -48,7 +48,7 @@ public class SamSquare {
                 tasks[taskIndex].markAsDone();
 
                 System.out.println(" Nice! I've marked this task as done:");
-                System.out.println("   [X] " + tasks[taskIndex]);
+                System.out.println("   [X] " + tasks[taskIndex].getDescription());
                 System.out.println("____________________________________________________________");
 
             } else if (message.startsWith("unmark ")) {
@@ -58,7 +58,7 @@ public class SamSquare {
                 tasks[taskIndex].markAsNotDone();
 
                 System.out.println(" OK, I've marked this task as not done yet:");
-                System.out.println("   [ ] " + tasks[taskIndex]);
+                System.out.println("   [ ] " + tasks[taskIndex].getDescription());
                 System.out.println("____________________________________________________________");
 
             } else {
