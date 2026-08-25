@@ -17,8 +17,9 @@ public class SamSquare {
 
         Scanner scanner = new Scanner(System.in);
 
-        String[] tasks = new String[100];
-        boolean[] taskDone = new boolean[100];
+        // String[] tasks = new String[100];
+        // boolean[] taskDone = new boolean[100];
+        Task[] tasks = new Task[100];
         int taskCount = 0;
 
         while (true) {
@@ -33,11 +34,9 @@ public class SamSquare {
                 System.out.println(" Here are the tasks in your list:");
 
                 for (int i = 0; i < taskCount; i++) {
-                    if (taskDone[i]) {
-                        System.out.println(" " + (i + 1) + ".[X] " + tasks[i]);
-                    } else {
-                        System.out.println(" " + (i + 1) + ".[ ] " + tasks[i]);
-                    }
+                    System.out.println(" " + (i + 1) + ".["
+                            + tasks[i].getStatusIcon() + "] "
+                            + tasks[i].getDescription());
                 }
 
                 System.out.println("____________________________________________________________");
@@ -46,7 +45,7 @@ public class SamSquare {
                 int taskNumber = Integer.parseInt(message.substring(5));
                 int taskIndex = taskNumber - 1;
 
-                taskDone[taskIndex] = true;
+                tasks[taskIndex].markAsDone();
 
                 System.out.println(" Nice! I've marked this task as done:");
                 System.out.println("   [X] " + tasks[taskIndex]);
@@ -56,15 +55,14 @@ public class SamSquare {
                 int taskNumber = Integer.parseInt(message.substring(7));
                 int taskIndex = taskNumber - 1;
 
-                taskDone[taskIndex] = false;
+                tasks[taskIndex].markAsNotDone();
 
                 System.out.println(" OK, I've marked this task as not done yet:");
                 System.out.println("   [ ] " + tasks[taskIndex]);
                 System.out.println("____________________________________________________________");
 
             } else {
-                tasks[taskCount] = message;
-                taskDone[taskCount] = false;
+                tasks[taskCount] = new Task(message);
                 taskCount++;
 
                 System.out.println(" added: " + message);
