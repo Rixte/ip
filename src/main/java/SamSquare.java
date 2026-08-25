@@ -17,6 +17,9 @@ public class SamSquare {
 
         Scanner scanner = new Scanner(System.in);
 
+        String[] tasks = new String[100];
+        int taskCount = 0;
+
         while (true) {
             String message = scanner.nextLine();
 
@@ -26,8 +29,18 @@ public class SamSquare {
                 break;
             }
 
-            System.out.println(" " + message);
-            System.out.println("____________________________________________________________");
+            if (message.equals("list")) {
+                for (int i = 0; i < taskCount; i++) {
+                    System.out.println(" " + (i + 1) + ". " + tasks[i]);
+                }
+                System.out.println("____________________________________________________________");
+            } else {
+                tasks[taskCount] = message;
+                taskCount++;
+
+                System.out.println(" added: " + message);
+                System.out.println("____________________________________________________________");
+            }
         }
 
         scanner.close();
