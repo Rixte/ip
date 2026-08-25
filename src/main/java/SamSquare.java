@@ -52,6 +52,16 @@ public class SamSquare {
                 System.out.println("   [X] " + tasks[taskIndex]);
                 System.out.println("____________________________________________________________");
 
+            } else if (message.startsWith("unmark ")) {
+                int taskNumber = Integer.parseInt(message.substring(7));
+                int taskIndex = taskNumber - 1;
+
+                taskDone[taskIndex] = false;
+
+                System.out.println(" OK, I've marked this task as not done yet:");
+                System.out.println("   [ ] " + tasks[taskIndex]);
+                System.out.println("____________________________________________________________");
+
             } else {
                 tasks[taskCount] = message;
                 taskDone[taskCount] = false;
