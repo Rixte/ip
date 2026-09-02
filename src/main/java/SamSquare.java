@@ -35,8 +35,9 @@ public class SamSquare {
 
                 for (int i = 0; i < taskCount; i++) {
                     System.out.println(" " + (i + 1) + ".["
+                            + tasks[i].getTypeIcon() + "]["
                             + tasks[i].getStatusIcon() + "] "
-                            + tasks[i].getDescription());
+                            + tasks[i].getFullDescription());
                 }
 
                 System.out.println("____________________________________________________________");
@@ -48,7 +49,8 @@ public class SamSquare {
                 tasks[taskIndex].markAsDone();
 
                 System.out.println(" Nice! I've marked this task as done:");
-                System.out.println("   [X] " + tasks[taskIndex].getDescription());
+                System.out.println("   [" + tasks[taskIndex].getTypeIcon() + "][X] "
+                        + tasks[taskIndex].getFullDescription());
                 System.out.println("____________________________________________________________");
 
             } else if (message.startsWith("unmark ")) {
@@ -58,7 +60,53 @@ public class SamSquare {
                 tasks[taskIndex].markAsNotDone();
 
                 System.out.println(" OK, I've marked this task as not done yet:");
-                System.out.println("   [ ] " + tasks[taskIndex].getDescription());
+                System.out.println("   [" + tasks[taskIndex].getTypeIcon() + "][ ] "
+                        + tasks[taskIndex].getFullDescription());
+                System.out.println("____________________________________________________________");
+
+            } else if (message.startsWith("todo ")) {
+                String description = message.substring(5);
+
+                tasks[taskCount] = new Todo(description);
+                taskCount++;
+
+                System.out.println(" Got it. I've added this task:");
+                System.out.println("   [T][ ] " + description);
+                System.out.println(" Now you have " + taskCount + " tasks in the list.");
+                System.out.println("____________________________________________________________");
+
+            } else if (message.startsWith("deadline ")) {
+                String content = message.substring(9);
+                String[] parts = content.split(" /by ", 2);
+
+                String description = parts[0];
+                String by = parts[1];
+
+                tasks[taskCount] = new Deadline(description, by);
+                taskCount++;
+
+                System.out.println(" Got it. I've added this task:");
+                System.out.println("   [D][ ] " + description + " (by: " + by + ")");
+                System.out.println(" Now you have " + taskCount + " tasks in the list.");
+                System.out.println("____________________________________________________________");
+
+            } else if (message.startsWith("event ")) {
+                String content = message.substring(6);
+
+                String[] fromParts = content.split(" /from ", 2);
+                String description = fromParts[0];
+
+                String[] toParts = fromParts[1].split(" /to ", 2);
+                String from = toParts[0];
+                String to = toParts[1];
+
+                tasks[taskCount] = new Event(description, from, to);
+                taskCount++;
+
+                System.out.println(" Got it. I've added this task:");
+                System.out.println("   [E][ ] " + description
+                        + " (from: " + from + " to: " + to + ")");
+                System.out.println(" Now you have " + taskCount + " tasks in the list.");
                 System.out.println("____________________________________________________________");
 
             } else {
