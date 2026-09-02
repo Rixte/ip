@@ -34,8 +34,6 @@ public class SamSquare {
     private static void runTaskManager() {
         Scanner scanner = new Scanner(System.in);
 
-        // String[] tasks = new String[100];
-        // boolean[] taskDone = new boolean[100];
         Task[] tasks = new Task[MAX_TASKS];
         int taskCount = 0;
 
