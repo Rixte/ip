@@ -134,7 +134,27 @@ All Git commits in this project must follow the SE-EDU Git conventions.
 - Do not commit or push unless explicitly requested by the user.
 - When completing an assignment increment, tag the commit with the exact increment ID as required by the assignment.
 
-## Reference
+## Coding Standard Reference
 
 Follow:
 https://se-education.org/guides/conventions/git.html
+
+## UI Testing Requirement
+
+After every code update:
+
+1. Update `test/ui-test-plan.md` if the affected behaviour or test cases have changed.
+2. Invoke the project-specific `test-ui` skill.
+3. Do not consider the code update complete until the UI tests have been run.
+4. The `test-ui` skill must test SamSquare through its actual console user interface using the test cases documented in `test/ui-test-plan.md`.
+5. For each test case, compare the actual program output against the expected output recorded in `test/ui-test-plan.md`.
+6. After testing, show a record of the console input and output for the test session.
+7. If a test case fails, terminate the test session immediately.
+8. When a test fails, report:
+  - the test case that failed,
+  - the actual output,
+  - the expected output.
+9. Do not skip a failing test or modify the expected output merely to make the test pass.
+10. After fixing a failed test, invoke the `test-ui` skill again and rerun the tests.
+11. Continue this process until all relevant UI tests pass.
+12. Any new or modified user-facing behaviour should have a corresponding test case in `test/ui-test-plan.md`.
