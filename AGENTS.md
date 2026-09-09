@@ -158,3 +158,34 @@ After every code update:
 10. After fixing a failed test, invoke the `test-ui` skill again and rerun the tests.
 11. Continue this process until all relevant UI tests pass.
 12. Any new or modified user-facing behaviour should have a corresponding test case in `test/ui-test-plan.md`.
+
+## Continuous AI Improvement
+
+Treat the repository's AI guidance as a living part of the project.
+
+1. During each task, note concrete cases where AI-generated work, review, or
+   testing missed a requirement, made an incorrect assumption, or failed to
+   detect a defect.
+2. When a recurring or generalisable weakness is found, update the most
+   relevant AI guidance file (for example, this file or `test-ui/SKILL.md`) in
+   the same change. State the observed failure and turn it into a specific,
+   verifiable instruction rather than adding vague advice.
+3. Do not weaken requirements, expected outputs, or tests to accommodate the
+   current implementation.
+4. Expand UI tests beyond happy paths. Cover boundary values, malformed and
+   incomplete commands, invalid task numbers, empty descriptions, command
+   whitespace, and operations on empty or previously modified task lists where
+   those behaviours are supported by the current requirements.
+5. Interleave successful and unsuccessful commands in stateful test sessions.
+   After each rejected command, use a suitable follow-up command such as
+   `list` to verify that the application's internal state was not changed.
+6. Keep each test case deterministic. Document its starting state and whether
+   it continues an earlier session or starts a fresh process.
+7. Mutation checks may be used to assess test quality: introduce one small,
+   targeted temporary defect, confirm that an existing test fails for the
+   intended reason, and then restore the original code. Never commit or leave
+   the temporary defect in the working tree. Do not change expected output to
+   make the mutation pass.
+8. Before a mutation check, record the files and exact code being changed so
+   the original state can be restored without overwriting unrelated user work.
+   After restoration, rerun the relevant tests and verify the working-tree diff.

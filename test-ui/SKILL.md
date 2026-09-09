@@ -40,6 +40,21 @@ When user-facing behaviour changes:
 1. Check whether `test/ui-test-plan.md` needs to be updated.
 2. Add or modify test cases when new behaviour is introduced.
 3. Keep the test plan consistent with the current SamSquare requirements.
+4. Add both positive and negative cases for each command where the requirements
+   define invalid input behaviour.
+5. Interleave positive and negative cases when state can carry across commands.
+   After rejected input, run `list` or another observable follow-up operation to
+   confirm that no task was added, removed, marked, or unmarked accidentally.
+6. Include boundary cases such as the first and last valid task number, zero,
+   negative numbers, numbers beyond the list size, non-numeric arguments, empty
+   descriptions, missing command components, and significant whitespace when
+   applicable.
+7. Every test case must state its starting state. Say explicitly whether it
+   starts a fresh SamSquare process or continues the state produced by named
+   earlier cases.
+8. Do not infer expected behaviour from the current implementation. Derive it
+   from the project requirements, and flag an unclear requirement instead of
+   encoding an implementation accident into the test plan.
 
 ## Testing Scope
 
@@ -54,6 +69,38 @@ The tests should cover the actual console behaviour of SamSquare, including:
 * storing arbitrary date/time strings;
 * handling multiple task types together;
 * exiting with `bye`.
+
+The scope must also include incorrect and incomplete input for the supported
+commands, plus checks that rejected commands leave task state unchanged.
+
+## Test Design Review
+
+Before running a session:
+
+1. Map each user-facing command and validation rule to at least one test case.
+2. Identify important branches that have only a successful case or only a
+   failing case, and add the missing counterpart when the requirement is known.
+3. Check that expected task counts and list contents follow from the documented
+   starting state and every preceding accepted command.
+4. Check that the test sequence can expose state corruption rather than merely
+   printing an error message.
+
+## Optional Mutation Check
+
+Use a mutation check only when the user requests or authorises an assessment of
+test effectiveness.
+
+1. Record the clean or pre-existing working-tree diff before editing.
+2. Make one minimal, targeted temporary production-code change representing a
+   plausible defect in behaviour covered by the test plan.
+3. Run the relevant UI tests and require them to fail for the intended reason.
+4. Stop immediately if they do not fail; report the surviving mutation as a
+   test gap and improve the test plan before trying again.
+5. Restore only the exact temporary change, preserving all pre-existing user
+   edits.
+6. Rerun the relevant UI tests against the restored code and inspect the diff to
+   verify that no mutation remains.
+7. Never commit, tag, or leave a temporary defect in the working tree.
 
 ## Failure Handling
 
