@@ -1,3 +1,11 @@
+package ui;
+
+import tasks.Task;
+import tasks.Todo;
+import tasks.Deadline;
+import tasks.Event;
+import exception.SamSquareException;
+
 import java.util.Scanner;
 
 public class SamSquare {
@@ -26,7 +34,7 @@ public class SamSquare {
                 + "      ||____||";
 
         System.out.println(banner);
-        System.out.println("Hello I am SamSquare.\n"
+        System.out.println("HELLO!! I am SamSquare :D\n"
                 + "What can I do for you?");
         System.out.println(LINE_SEPARATOR);
     }
