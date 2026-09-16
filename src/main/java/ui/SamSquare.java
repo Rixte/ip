@@ -17,6 +17,7 @@ public class SamSquare {
     private static final String EVENT_COMMAND = "event ";
     private static final String MARK_COMMAND = "mark ";
     private static final String UNMARK_COMMAND = "unmark ";
+    private static final String DELETE_COMMAND = "delete ";
 
     public static void main(String[] args) {
         showGreeting();
@@ -72,6 +73,14 @@ public class SamSquare {
                             "Specify the task number to unmark please!"
                     );
 
+                } else if (message.startsWith(DELETE_COMMAND)) {
+                    taskCount = deleteTask(message, tasks, taskCount);
+
+                } else if (message.equals("delete")) {
+                    throw new SamSquareException(
+                            "Specify the task number to delete please!"
+                    );
+
                 } else if (message.equals("todo")) {
                     taskCount = addTodo("todo ", tasks, taskCount);
 
@@ -97,7 +106,7 @@ public class SamSquare {
 
                 } else {
                     throw new SamSquareException(
-                            "I don't recognise that command. "
+                            "Hold up... I don't recognise that command. "
                                     + "Please use todo, deadline, event, mark, "
                                     + "unmark, list or bye."
                     );
@@ -197,6 +206,53 @@ public class SamSquare {
         System.out.println("   [" + tasks[taskIndex].getTypeIcon() + "][ ] "
                 + tasks[taskIndex].getFullDescription());
         System.out.println(LINE_SEPARATOR);
+    }
+
+    private static int deleteTask(String message, Task[] tasks, int taskCount)
+            throws SamSquareException {
+
+        String numberText = message.substring(DELETE_COMMAND.length()).trim();
+
+        if (numberText.isEmpty()) {
+            throw new SamSquareException(
+                    "Specify which task you want to delete please! D:"
+            );
+        }
+
+        int taskNumber;
+
+        try {
+            taskNumber = Integer.parseInt(numberText);
+        } catch (NumberFormatException e) {
+            throw new SamSquareException(
+                    "HEY!! The task number must be a valid number!"
+            );
+        }
+
+        checkTaskNumber(taskNumber, taskCount);
+
+        int taskIndex = taskNumber - 1;
+
+        Task deletedTask = tasks[taskIndex];
+
+        // shift all tasks after the deleted task one position to the left
+        for (int i = taskIndex; i < taskCount - 1; i++) {
+            tasks[i] = tasks[i + 1];
+        }
+
+        // remove the 2nd (duplicated) reference at the end
+        tasks[taskCount - 1] = null;
+
+        taskCount--;
+
+        System.out.println(" Ahh noted! I've removed this task:");
+        System.out.println("   [" + deletedTask.getTypeIcon() + "]["
+                + deletedTask.getStatusIcon() + "] "
+                + deletedTask.getFullDescription());
+        System.out.println(" Now you have " + taskCount + " tasks in the list.");
+        System.out.println(LINE_SEPARATOR);
+
+        return taskCount;
     }
 
     private static void checkTaskNumber(int taskNumber, int taskCount)
