@@ -44,7 +44,7 @@ public class SamSquare {
         Scanner scanner = new Scanner(System.in);
 
         Task[] tasks = new Task[MAX_TASKS];
-        int taskCount = 0;
+        int taskCount = Storage.load(tasks);
 
         while (true) {
             String message = scanner.nextLine();

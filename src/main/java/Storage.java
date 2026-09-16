@@ -51,4 +51,57 @@ public class Storage {
             System.out.println("Error saving tasks.");
         }
     }
+
+    public static int load(Task[] tasks) {
+        int taskCount = 0;
+
+        if (!Files.exists(FILE_PATH)) {
+            return 0;
+        }
+
+        try {
+            java.io.BufferedReader reader = Files.newBufferedReader(FILE_PATH);
+
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(" \\| ");
+
+                String type = parts[0];
+                String status = parts[1];
+
+                if (type.equals("T")) {
+                    String description = parts[2];
+
+                    tasks[taskCount] = new Task(description);
+
+                } else if (type.equals("D")) {
+                    String description = parts[2];
+                    String by = parts[3];
+
+                    tasks[taskCount] = new Deadline(description, by);
+
+                } else if (type.equals("E")) {
+                    String description = parts[2];
+                    String from = parts[3];
+                    String to = parts[4];
+
+                    tasks[taskCount] = new Event(description, from, to);
+                }
+
+                if (status.equals("1")) {
+                    tasks[taskCount].markAsDone();
+                }
+
+                taskCount++;
+            }
+
+            reader.close();
+
+        } catch (IOException e) {
+            System.out.println("Error loading tasks.");
+        }
+
+        return taskCount;
+    }
 }
