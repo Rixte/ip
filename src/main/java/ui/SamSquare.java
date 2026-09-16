@@ -5,6 +5,7 @@ import tasks.Deadline;
 import tasks.Event;
 import tasks.Task;
 import tasks.Todo;
+import storage.Storage;
 
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -44,6 +45,7 @@ public class SamSquare {
         Scanner scanner = new Scanner(System.in);
 
         ArrayList<Task> tasks = new ArrayList<>();
+        Storage.load(tasks);
 
         while (true) {
             String message = scanner.nextLine();
@@ -58,6 +60,7 @@ public class SamSquare {
 
                 } else if (message.startsWith(MARK_COMMAND)) {
                     markTask(message, tasks);
+                    Storage.save(tasks);
 
                 } else if (message.equals("mark")) {
                     throw new SamSquareException(
@@ -66,6 +69,7 @@ public class SamSquare {
 
                 } else if (message.startsWith(UNMARK_COMMAND)) {
                     unmarkTask(message, tasks);
+                    Storage.save(tasks);
 
                 } else if (message.equals("unmark")) {
                     throw new SamSquareException(
@@ -74,6 +78,7 @@ public class SamSquare {
 
                 } else if (message.startsWith(DELETE_COMMAND)) {
                     deleteTask(message, tasks);
+                    Storage.save(tasks);
 
                 } else if (message.equals("delete")) {
                     throw new SamSquareException(
@@ -82,21 +87,27 @@ public class SamSquare {
 
                 } else if (message.equals("todo")) {
                     addTodo("todo ", tasks);
+                    Storage.save(tasks);
 
                 } else if (message.startsWith(TODO_COMMAND)) {
                     addTodo(message, tasks);
+                    Storage.save(tasks);
 
                 } else if (message.equals("deadline")) {
                     addDeadline("deadline ", tasks);
+                    Storage.save(tasks);
 
                 } else if (message.startsWith(DEADLINE_COMMAND)) {
                     addDeadline(message, tasks);
+                    Storage.save(tasks);
 
                 } else if (message.equals("event")) {
                     addEvent("event ", tasks);
+                    Storage.save(tasks);
 
                 } else if (message.startsWith(EVENT_COMMAND)) {
                     addEvent(message, tasks);
+                    Storage.save(tasks);
 
                 } else if (message.trim().isEmpty()) {
                     throw new SamSquareException(

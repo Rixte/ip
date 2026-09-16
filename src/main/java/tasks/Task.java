@@ -13,6 +13,10 @@ public class Task {
         return isDone ? "X" : " ";
     }
 
+    public boolean isDone() {
+        return isDone;
+    }
+
     public void markAsDone() {
         isDone = true;
     }
