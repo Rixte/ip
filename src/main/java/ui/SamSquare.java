@@ -5,6 +5,7 @@ import tasks.Todo;
 import tasks.Deadline;
 import tasks.Event;
 import exception.SamSquareException;
+import storage.Storage;
 
 import java.util.Scanner;
 
@@ -58,6 +59,7 @@ public class SamSquare {
 
                 } else if (message.startsWith(MARK_COMMAND)) {
                     markTask(message, tasks, taskCount);
+                    Storage.save(tasks, taskCount);
 
                 } else if (message.equals("mark")) {
                     throw new SamSquareException(
@@ -66,6 +68,7 @@ public class SamSquare {
 
                 } else if (message.startsWith(UNMARK_COMMAND)) {
                     unmarkTask(message, tasks, taskCount);
+                    Storage.save(tasks, taskCount);
 
                 } else if (message.equals("unmark")) {
                     throw new SamSquareException(
@@ -74,21 +77,27 @@ public class SamSquare {
 
                 } else if (message.equals("todo")) {
                     taskCount = addTodo("todo ", tasks, taskCount);
+                    Storage.save(tasks, taskCount);
 
                 } else if (message.startsWith(TODO_COMMAND)) {
                     taskCount = addTodo(message, tasks, taskCount);
+                    Storage.save(tasks, taskCount);
 
                 } else if (message.equals("deadline")) {
                     taskCount = addDeadline("deadline ", tasks, taskCount);
+                    Storage.save(tasks, taskCount);
 
                 } else if (message.startsWith(DEADLINE_COMMAND)) {
                     taskCount = addDeadline(message, tasks, taskCount);
+                    Storage.save(tasks, taskCount);
 
                 } else if (message.equals("event")) {
                     taskCount = addEvent("event ", tasks, taskCount);
+                    Storage.save(tasks, taskCount);
 
                 } else if (message.startsWith(EVENT_COMMAND)) {
                     taskCount = addEvent(message, tasks, taskCount);
+                    Storage.save(tasks, taskCount);
 
                 } else if (message.trim().isEmpty()) {
                     throw new SamSquareException(
