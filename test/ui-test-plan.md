@@ -1,346 +1,415 @@
 # UI Test Plan
 
-This document defines the UI test cases for SamSquare.
+This plan tests SamSquare through its actual console interface. Run the cases in
+order in one process. Test Case 1 starts with an empty task list; every later
+case continues from the state left by the preceding case. Stop at the first
+failure.
 
-The tests interact with SamSquare through its console interface. Each test case
-contains an aim, the required console input, and the expected output.
+The greeting appears once before Test Case 1. After every command response,
+SamSquare prints this separator:
 
-Tests should be executed in the order listed below. If a test case fails, stop
-the test session immediately and report the actual and expected output.
+```text
+____________________________________________________________
+```
 
----
+The separator is part of the expected output for every case, although it is
+shown once here to keep the cases readable. Leading spaces inside output blocks
+are significant.
 
-## Test Case 1: Add a ToDo
+## Test Case 1: List an empty collection
 
-### Aim
+Input: `list`
 
-Verify that SamSquare can add a ToDo task.
+Expected response:
 
-### Input
+```text
+ Here are the tasks in your list:
+```
+
+The task list remains empty.
+
+## Test Case 2: Reject an empty ToDo without changing state
+
+Input:
+
+```text
+todo
+list
+```
+
+Expected responses:
+
+```text
+ WAIT PAUSE!! HEY!! The description of a todo cannot be empty!
+```
+
+```text
+ Here are the tasks in your list:
+```
+
+The follow-up `list` confirms that the rejected command added nothing.
+
+## Test Case 3: Add all task types
+
+Input:
 
 ```text
 todo borrow book
-```
-
-### Expected Output
-
-```text
-Got it. I've added this task:
-[T][ ] borrow book
-Now you have 1 tasks in the list.
-```
-
----
-
-## Test Case 2: Add a Deadline
-
-### Aim
-
-Verify that SamSquare can add a Deadline task and store the `/by` value as a
-string.
-
-### Input
-
-```text
-deadline return book /by Sunday
-```
-
-### Expected Output
-
-```text
-Got it. I've added this task:
-[D][ ] return book (by: Sunday)
-Now you have 2 tasks in the list.
-```
-
----
-
-## Test Case 3: Add an Event
-
-### Aim
-
-Verify that SamSquare can add an Event task and store the `/from` and `/to`
-values as strings.
-
-### Input
-
-```text
+deadline return book /by no idea :-p
 event project meeting /from Mon 2pm /to 4pm
-```
-
-### Expected Output
-
-```text
-Got it. I've added this task:
-[E][ ] project meeting (from: Mon 2pm to: 4pm)
-Now you have 3 tasks in the list.
-```
-
----
-
-## Test Case 4: List Different Task Types
-
-### Aim
-
-Verify that ToDos, Deadlines, and Events are displayed correctly in the task
-list.
-
-### Input
-
-```text
 list
 ```
 
-### Expected Output
+Expected responses:
 
 ```text
-Here are the tasks in your list:
-1.[T][ ] borrow book
-2.[D][ ] return book (by: Sunday)
-3.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+ Got it!! I've added this task:
+   [T][ ] borrow book
+ Now you have 1 tasks in the list :)
 ```
 
----
+```text
+ Got it! I've added this task:
+   [D][ ] return book (by: no idea :-p)
+ Now you have 2 tasks in the list :)
+```
 
-## Test Case 5: Mark a Task as Done
+```text
+ Got it. I've added this task:
+   [E][ ] project meeting (from: Mon 2pm to: 4pm)
+ Now you have 3 tasks in the list.
+```
 
-### Aim
+```text
+ Here are the tasks in your list:
+ 1.[T][ ] borrow book
+ 2.[D][ ] return book (by: no idea :-p)
+ 3.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+```
 
-Verify that an existing task can be marked as done.
+This also verifies that arbitrary date/time strings are stored unchanged.
 
-### Input
+## Test Case 4: Reject malformed Deadline commands without changing state
+
+Input:
+
+```text
+deadline submit report
+deadline  /by Friday
+deadline submit report /by<one trailing space>
+list
+```
+
+Expected responses:
+
+```text
+ WAIT PAUSE!! Hey... a deadline needs the format: deadline <task> /by <date>.
+```
+
+```text
+ WAIT PAUSE!! Hey... a deadline needs the format: deadline <task> /by <date>.
+```
+
+```text
+ WAIT PAUSE!! Hey... a deadline needs the format: deadline <task> /by <date>.
+```
+
+```text
+ Here are the tasks in your list:
+ 1.[T][ ] borrow book
+ 2.[D][ ] return book (by: no idea :-p)
+ 3.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+```
+
+## Test Case 5: Reject malformed Event commands without changing state
+
+Input:
+
+```text
+event team meeting
+event team meeting /from Monday
+event  /from Monday /to Tuesday
+event team meeting /from  /to Tuesday
+event team meeting /from Monday /to<one trailing space>
+list
+```
+
+Expected responses:
+
+```text
+ WAIT PAUSE!! An event needs the format: event <task> /from <time> /to <time>.
+```
+
+```text
+ WAIT PAUSE!! An event needs both a starting and ending time.
+```
+
+```text
+ WAIT PAUSE!! An event needs the format: event <task> /from <time> /to <time>.
+```
+
+```text
+ WAIT PAUSE!! Broski.. an event must have a starting time!
+```
+
+```text
+ WAIT PAUSE!! An event needs both a starting and ending time.
+```
+
+```text
+ Here are the tasks in your list:
+ 1.[T][ ] borrow book
+ 2.[D][ ] return book (by: no idea :-p)
+ 3.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+```
+
+## Test Case 6: Reject invalid mark arguments without changing state
+
+Input:
+
+```text
+mark
+mark abc
+mark 0
+mark -1
+mark 4
+list
+```
+
+Expected responses:
+
+```text
+ WAIT PAUSE!! Specify the task number to mark please!
+```
+
+```text
+ WAIT PAUSE!! The task number must be a valid number.
+```
+
+```text
+ WAIT PAUSE!! There is no task numbered 0.
+```
+
+```text
+ WAIT PAUSE!! There is no task numbered -1.
+```
+
+```text
+ WAIT PAUSE!! There is no task numbered 4.
+```
+
+```text
+ Here are the tasks in your list:
+ 1.[T][ ] borrow book
+ 2.[D][ ] return book (by: no idea :-p)
+ 3.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+```
+
+## Test Case 7: Mark the first and last tasks
+
+Input:
 
 ```text
 mark 1
-```
-
-### Expected Output
-
-```text
-Nice! I've marked this task as done:
-[T][X] borrow book
-```
-
----
-
-## Test Case 6: Unmark a Task
-
-### Aim
-
-Verify that a completed task can be marked as not done.
-
-### Input
-
-```text
-unmark 1
-```
-
-### Expected Output
-
-```text
-OK, I've marked this task as not done yet:
-[T][ ] borrow book
-```
-
----
-
-## Test Case 7: Deadline with Arbitrary String
-
-### Aim
-
-Verify that Deadline date/time information is treated as a string and does not
-need to be a valid date.
-
-### Input
-
-```text
-deadline do homework /by no idea :-p
-```
-
-### Expected Output
-
-```text
-Got it. I've added this task:
-[D][ ] do homework (by: no idea :-p)
-```
-
----
-
-## Test Case 8: Event with Arbitrary Strings
-
-### Aim
-
-Verify that Event date/time information is treated as strings and does not need
-to be converted into actual dates or times.
-
-### Input
-
-```text
-event unusual event /from whenever /to sometime later
-```
-
-### Expected Output
-
-```text
-Got it. I've added this task:
-[E][ ] unusual event (from: whenever to: sometime later)
-```
-
----
-
-## Test Case 9: Multiple Tasks and Task Types
-
-### Aim
-
-Verify that different task types can coexist in the same task list and retain
-their individual type and date/time information.
-
-### Input
-
-```text
-todo buy groceries
-deadline submit report /by Friday 5pm
-event team meeting /from Monday 2pm /to Monday 4pm
-list
-```
-
-### Expected Output
-
-```text
-Got it. I've added this task:
-[T][ ] buy groceries
-Got it. I've added this task:
-[D][ ] submit report (by: Friday 5pm)
-Got it. I've added this task:
-[E][ ] team meeting (from: Monday 2pm to: Monday 4pm)
-Here are the tasks in your list:
-1.[T][ ] buy groceries
-2.[D][ ] submit report (by: Friday 5pm)
-3.[E][ ] team meeting (from: Monday 2pm to: Monday 4pm)
-```
-
----
-
-## Test Case 10: Mark a Deadline as Done
-
-### Aim
-
-Verify that Deadline tasks can use the existing Level-3 mark functionality.
-
-### Input
-
-```text
-mark 2
-```
-
-### Expected Output
-
-```text
-Nice! I've marked this task as done:
-[D][X] submit report (by: Friday 5pm)
-```
-
----
-
-## Test Case 11: Mark an Event as Done
-
-### Aim
-
-Verify that Event tasks can use the existing Level-3 mark functionality.
-
-### Input
-
-```text
 mark 3
 ```
 
-### Expected Output
+Expected responses:
 
 ```text
-Nice! I've marked this task as done:
-[E][X] team meeting (from: Monday 2pm to: Monday 4pm)
+ WELL DONE!! I've marked this task as done:
+   [T][X] borrow book
 ```
 
----
-
-## Test Case 12: Unmark a Deadline
-
-### Aim
-
-Verify that Deadline tasks can be marked as not done.
-
-### Input
-
 ```text
-unmark 2
+ WELL DONE!! I've marked this task as done:
+   [E][X] project meeting (from: Mon 2pm to: 4pm)
 ```
 
-### Expected Output
+## Test Case 8: Reject invalid unmark arguments and preserve state
+
+Input:
 
 ```text
-OK, I've marked this task as not done yet:
-[D][ ] submit report (by: Friday 5pm)
+unmark
+unmark xyz
+unmark 0
+unmark 4
+list
 ```
 
----
-
-## Test Case 13: Unmark an Event
-
-### Aim
-
-Verify that Event tasks can be marked as not done.
-
-### Input
+Expected responses:
 
 ```text
+ WAIT PAUSE!! Specify the task number to unmark please!
+```
+
+```text
+ WAIT PAUSE!! The task number must be a valid number.
+```
+
+```text
+ WAIT PAUSE!! There is no task numbered 0.
+```
+
+```text
+ WAIT PAUSE!! There is no task numbered 4.
+```
+
+```text
+ Here are the tasks in your list:
+ 1.[T][X] borrow book
+ 2.[D][ ] return book (by: no idea :-p)
+ 3.[E][X] project meeting (from: Mon 2pm to: 4pm)
+```
+
+## Test Case 9: Unmark the first and last tasks
+
+Input:
+
+```text
+unmark 1
 unmark 3
 ```
 
-### Expected Output
+Expected responses:
 
 ```text
-OK, I've marked this task as not done yet:
-[E][ ] team meeting (from: Monday 2pm to: Monday 4pm)
+ OK, I've marked this task as not done yet:
+   [T][ ] borrow book
 ```
-
----
-
-## Test Case 14: Exit the Program
-
-### Aim
-
-Verify that SamSquare exits correctly when the `bye` command is entered.
-
-### Input
 
 ```text
-bye
+ OK, I've marked this task as not done yet:
+   [E][ ] project meeting (from: Mon 2pm to: 4pm)
 ```
 
-### Expected Output
+## Test Case 10: Reject invalid delete arguments and preserve state
+
+Input:
+
+```text
+delete
+delete nope
+delete 0
+delete -1
+delete 4
+list
+```
+
+Expected responses:
+
+```text
+ WAIT PAUSE!! Specify the task number to delete please!
+```
+
+```text
+ WAIT PAUSE!! HEY!! The task number must be a valid number!
+```
+
+```text
+ WAIT PAUSE!! There is no task numbered 0.
+```
+
+```text
+ WAIT PAUSE!! There is no task numbered -1.
+```
+
+```text
+ WAIT PAUSE!! There is no task numbered 4.
+```
+
+```text
+ Here are the tasks in your list:
+ 1.[T][ ] borrow book
+ 2.[D][ ] return book (by: no idea :-p)
+ 3.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+```
+
+## Test Case 11: Remove from the collection and verify reindexing
+
+Input:
+
+```text
+delete 2
+list
+todo buy groceries
+delete 1
+list
+```
+
+Expected responses:
+
+```text
+ Ahh noted! I've removed this task:
+   [D][ ] return book (by: no idea :-p)
+ Now you have 2 tasks in the list.
+```
+
+```text
+ Here are the tasks in your list:
+ 1.[T][ ] borrow book
+ 2.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+```
+
+```text
+ Got it!! I've added this task:
+   [T][ ] buy groceries
+ Now you have 3 tasks in the list :)
+```
+
+```text
+ Ahh noted! I've removed this task:
+   [T][ ] borrow book
+ Now you have 2 tasks in the list.
+```
+
+```text
+ Here are the tasks in your list:
+ 1.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+ 2.[T][ ] buy groceries
+```
+
+This is the collection-specific regression case. It verifies removal from the
+middle and front, automatic index shifting, and adding after a removal.
+
+## Test Case 12: Reject whitespace and unknown commands
+
+The first input line is `<three spaces>`: enter three literal spaces, not the
+angle-bracketed text.
+
+Input:
+
+```text
+<three spaces>
+hello
+list
+```
+
+Expected responses:
+
+```text
+ WAIT PAUSE!! Please don't leave your input empty D:
+```
+
+```text
+ WAIT PAUSE!! Hold up... I don't recognise that command. Please use todo, deadline, event, mark, unmark, list or bye.
+```
+
+```text
+ Here are the tasks in your list:
+ 1.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+ 2.[T][ ] buy groceries
+```
+
+## Test Case 13: Exit
+
+Input: `bye`
+
+Expected response:
 
 ```text
 Byebye hope to see you again soon!
 ```
 
----
-
-# Test Execution Requirements
-
-For every test session:
-
-1. Run SamSquare using the actual console interface.
-2. Execute the test cases in the order listed.
-3. Compare the actual output with the expected output.
-4. Show the console input and output for the test session.
-5. If any test case fails, stop the test session immediately.
-6. Report:
-
-    * the test case that failed,
-    * the actual output,
-    * the expected output.
-7. After fixing the problem, run the UI tests again.
-8. Do not modify the expected output simply to make a failing test pass.
-
-When user-facing behaviour changes, update this test plan with the relevant
-new or modified test cases.
+The process must terminate after printing the separator.
