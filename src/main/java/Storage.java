@@ -4,6 +4,8 @@ import tasks.Deadline;
 import tasks.Event;
 import tasks.Task;
 
+
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -60,7 +62,7 @@ public class Storage {
         }
 
         try {
-            java.io.BufferedReader reader = Files.newBufferedReader(FILE_PATH);
+            BufferedReader reader = Files.newBufferedReader(FILE_PATH);
 
             String line;
 
