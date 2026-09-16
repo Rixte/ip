@@ -67,35 +67,77 @@ public class Storage {
             String line;
 
             while ((line = reader.readLine()) != null) {
+
+                if (line.trim().isEmpty()) {
+                    continue;
+                }
+
                 String[] parts = line.split(" \\| ");
 
-                String type = parts[0];
-                String status = parts[1];
+                try {
+                    String type = parts[0];
+                    String status = parts[1];
 
-                if (type.equals("T")) {
-                    String description = parts[2];
+                    if (type.equals("T")) {
+                        if (parts.length != 3) {
+                            continue;
+                        }
 
-                    tasks[taskCount] = new Task(description);
+                        String description = parts[2];
 
-                } else if (type.equals("D")) {
-                    String description = parts[2];
-                    String by = parts[3];
+                        if (description.isEmpty()) {
+                            continue;
+                        }
 
-                    tasks[taskCount] = new Deadline(description, by);
+                        tasks[taskCount] = new Task(description);
 
-                } else if (type.equals("E")) {
-                    String description = parts[2];
-                    String from = parts[3];
-                    String to = parts[4];
+                    } else if (type.equals("D")) {
 
-                    tasks[taskCount] = new Event(description, from, to);
+                        if (parts.length != 4) {
+                            continue;
+                        }
+
+                        String description = parts[2];
+                        String by = parts[3];
+
+                        if (description.isEmpty() || by.isEmpty()) {
+                            continue;
+                        }
+
+                        tasks[taskCount] = new Deadline(description, by);
+
+                    } else if (type.equals("E")) {
+
+                        if (parts.length != 5) {
+                            continue;
+                        }
+
+                        String description = parts[2];
+                        String from = parts[3];
+                        String to = parts[4];
+
+                        if (description.isEmpty()
+                                || from.isEmpty()
+                                || to.isEmpty()) {
+                            continue;
+                        }
+
+                        tasks[taskCount] = new Event(description, from, to);
+                    } else {
+                        continue;
+                    }
+
+                    if (status.equals("1")) {
+                        tasks[taskCount].markAsDone();
+                    } else if (!status.equals("0")) {
+                        tasks[taskCount] = null;
+                        continue;
+                    }
+
+                    taskCount++;
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    // this is to ignore malformed line and continue loading
                 }
-
-                if (status.equals("1")) {
-                    tasks[taskCount].markAsDone();
-                }
-
-                taskCount++;
             }
 
             reader.close();
