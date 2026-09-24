@@ -87,6 +87,11 @@ Before running a session:
 1. Map each user-facing command and validation rule to at least one test case.
 2. Identify important branches that have only a successful case or only a
    failing case, and add the missing counterpart when the requirement is known.
+   The original parsing tests omitted whitespace-only arguments and integer
+   overflow. For parser refactoring, test bare commands separately from
+   commands followed by spaces, test numbers outside the integer range, and
+   verify that command-name prefixes or extra arguments do not trigger an
+   unintended action. Follow rejected commands with a state check.
 3. Check that expected task counts and list contents follow from the documented
    starting state and every preceding accepted command.
 4. Check that the test sequence can expose state corruption rather than merely

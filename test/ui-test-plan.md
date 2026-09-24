@@ -34,7 +34,8 @@ ____________________________________________________________
 
 The separator is part of the expected output for every case, although it is
 shown once here to keep the cases readable. Leading spaces inside output blocks
-are significant.
+are significant. Input markers `<one trailing space>` and `<three spaces>`
+stand for literal spaces, including when appended to a command.
 
 ## Test Case 1: List an empty collection
 
@@ -422,7 +423,257 @@ Expected responses:
  2.[T][ ] buy groceries
 ```
 
-## Test Case 13: Exit
+## Test Case 13: Reject empty arguments and oversized task numbers
+
+Continues the state left by Test Case 12.
+
+Input:
+
+```text
+mark<one trailing space>
+list
+unmark<three spaces>
+list
+delete<one trailing space>
+list
+mark 2147483648
+list
+unmark 2147483648
+list
+delete 2147483648
+list
+unmark -1
+list
+todo<three spaces>
+list
+deadline
+list
+event
+list
+```
+
+Expected responses:
+
+```text
+ WAIT PAUSE!! Please specify which task you want to mark.
+```
+
+```text
+ Here are the tasks in your list:
+ 1.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+ 2.[T][ ] buy groceries
+```
+
+```text
+ WAIT PAUSE!! Please specify which task you want to unmark.
+```
+
+```text
+ Here are the tasks in your list:
+ 1.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+ 2.[T][ ] buy groceries
+```
+
+```text
+ WAIT PAUSE!! Specify which task you want to delete please! D:
+```
+
+```text
+ Here are the tasks in your list:
+ 1.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+ 2.[T][ ] buy groceries
+```
+
+```text
+ WAIT PAUSE!! The task number must be a valid number.
+```
+
+```text
+ Here are the tasks in your list:
+ 1.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+ 2.[T][ ] buy groceries
+```
+
+```text
+ WAIT PAUSE!! The task number must be a valid number.
+```
+
+```text
+ Here are the tasks in your list:
+ 1.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+ 2.[T][ ] buy groceries
+```
+
+```text
+ WAIT PAUSE!! HEY!! The task number must be a valid number!
+```
+
+```text
+ Here are the tasks in your list:
+ 1.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+ 2.[T][ ] buy groceries
+```
+
+```text
+ WAIT PAUSE!! There is no task numbered -1.
+```
+
+```text
+ Here are the tasks in your list:
+ 1.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+ 2.[T][ ] buy groceries
+```
+
+```text
+ WAIT PAUSE!! HEY!! The description of a todo cannot be empty!
+```
+
+```text
+ Here are the tasks in your list:
+ 1.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+ 2.[T][ ] buy groceries
+```
+
+```text
+ WAIT PAUSE!! Hey... a deadline needs the format: deadline <task> /by <date>.
+```
+
+```text
+ Here are the tasks in your list:
+ 1.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+ 2.[T][ ] buy groceries
+```
+
+```text
+ WAIT PAUSE!! An event needs the format: event <task> /from <time> /to <time>.
+```
+
+```text
+ Here are the tasks in your list:
+ 1.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+ 2.[T][ ] buy groceries
+```
+
+## Test Case 14: Keep command names and no-argument commands exact
+
+Continues the state left by Test Case 13.
+
+Input:
+
+```text
+todoist read
+list
+list extra
+list
+bye extra
+list
+ list
+list
+```
+
+Expected responses:
+
+```text
+ WAIT PAUSE!! Hold up... I don't recognise that command. Please use todo, deadline, event, mark, unmark, list or bye.
+```
+
+```text
+ Here are the tasks in your list:
+ 1.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+ 2.[T][ ] buy groceries
+```
+
+```text
+ WAIT PAUSE!! Hold up... I don't recognise that command. Please use todo, deadline, event, mark, unmark, list or bye.
+```
+
+```text
+ Here are the tasks in your list:
+ 1.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+ 2.[T][ ] buy groceries
+```
+
+```text
+ WAIT PAUSE!! Hold up... I don't recognise that command. Please use todo, deadline, event, mark, unmark, list or bye.
+```
+
+```text
+ Here are the tasks in your list:
+ 1.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+ 2.[T][ ] buy groceries
+```
+
+```text
+ WAIT PAUSE!! Hold up... I don't recognise that command. Please use todo, deadline, event, mark, unmark, list or bye.
+```
+
+```text
+ Here are the tasks in your list:
+ 1.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+ 2.[T][ ] buy groceries
+```
+
+## Test Case 15: Accept whitespace around task arguments
+
+Continues the state left by Test Case 14.
+
+Input:
+
+```text
+todo   check parser<three spaces>
+mark   3<three spaces>
+list
+unmark   3<three spaces>
+list
+delete   3<three spaces>
+list
+```
+
+Expected responses:
+
+```text
+ Got it!! I've added this task:
+   [T][ ] check parser
+ Now you have 3 tasks in the list :)
+```
+
+```text
+ WELL DONE!! I've marked this task as done:
+   [T][X] check parser
+```
+
+```text
+ Here are the tasks in your list:
+ 1.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+ 2.[T][ ] buy groceries
+ 3.[T][X] check parser
+```
+
+```text
+ OK, I've marked this task as not done yet:
+   [T][ ] check parser
+```
+
+```text
+ Here are the tasks in your list:
+ 1.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+ 2.[T][ ] buy groceries
+ 3.[T][ ] check parser
+```
+
+```text
+ Ahh noted! I've removed this task:
+   [T][ ] check parser
+ Now you have 2 tasks in the list.
+```
+
+```text
+ Here are the tasks in your list:
+ 1.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+ 2.[T][ ] buy groceries
+```
+
+## Test Case 16: Exit
 
 Input: `bye`
 
