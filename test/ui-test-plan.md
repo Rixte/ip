@@ -5,8 +5,28 @@ order in one process. Test Case 1 starts with an empty task list; every later
 case continues from the state left by the preceding case. Stop at the first
 failure.
 
-The greeting appears once before Test Case 1. After every command response,
-SamSquare prints this separator:
+Run the process in a fresh working directory with no `data/samsquare.txt`, so
+saved personal tasks do not affect the starting state. Compile and run using
+Java 25, preserving UTF-8 output for the banner.
+
+The greeting appears exactly once before Test Case 1.
+
+Expected greeting:
+
+```text
+      __________
+    /            \
+   /   •     •    \
+  |      ᴥ         |
+   \    _____     /
+    \____________/
+      ||    ||
+      ||____||
+HELLO!! I am SamSquare :D
+What can I do for you?
+```
+
+After the greeting and every command response, SamSquare prints this separator:
 
 ```text
 ____________________________________________________________

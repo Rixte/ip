@@ -1,18 +1,18 @@
 package ui;
 
+import java.util.ArrayList;
+
 import exception.SamSquareException;
+import storage.Storage;
 import tasks.Deadline;
 import tasks.Event;
 import tasks.Task;
 import tasks.Todo;
-import storage.Storage;
 
-import java.util.ArrayList;
-import java.util.Scanner;
-
+/**
+ * Coordinates command handling, task changes, storage, and console interaction.
+ */
 public class SamSquare {
-    private static final String LINE_SEPARATOR =
-            "____________________________________________________________";
     private static final String TODO_COMMAND = "todo ";
     private static final String DEADLINE_COMMAND = "deadline ";
     private static final String EVENT_COMMAND = "event ";
@@ -20,43 +20,44 @@ public class SamSquare {
     private static final String UNMARK_COMMAND = "unmark ";
     private static final String DELETE_COMMAND = "delete ";
 
+    private final Ui ui = new Ui();
+
+    /**
+     * Starts the console task manager.
+     *
+     * @param args Command-line arguments, which are not used.
+     */
     public static void main(String[] args) {
-        showGreeting();
-        runTaskManager();
+        new SamSquare().run();
     }
 
-    private static void showGreeting() {
-        String banner = "      __________\n"
-                + "    /            \\\n"
-                + "   /   •     •    \\\n"
-                + "  |      ᴥ         |\n"
-                + "   \\    _____     /\n"
-                + "    \\____________/\n"
-                + "      ||    ||\n"
-                + "      ||____||";
-
-        System.out.println(banner);
-        System.out.println("HELLO!! I am SamSquare :D\n"
-                + "What can I do for you?");
-        System.out.println(LINE_SEPARATOR);
+    /**
+     * Shows the greeting and processes commands until the user exits.
+     */
+    public void run() {
+        try (ui) {
+            ui.showGreeting();
+            runTaskManager();
+        }
     }
 
-    private static void runTaskManager() {
-        Scanner scanner = new Scanner(System.in);
-
+    /**
+     * Loads saved tasks and dispatches commands, saving successful changes.
+     */
+    private void runTaskManager() {
         ArrayList<Task> tasks = new ArrayList<>();
         Storage.load(tasks);
 
         while (true) {
-            String message = scanner.nextLine();
+            String message = ui.readCommand();
 
             try {
                 if (message.equals("bye")) {
-                    printGoodbyeMessage();
+                    ui.showGoodbye();
                     break;
 
                 } else if (message.equals("list")) {
-                    listTasks(tasks);
+                    ui.showTasks(tasks);
 
                 } else if (message.startsWith(MARK_COMMAND)) {
                     markTask(message, tasks);
@@ -122,28 +123,15 @@ public class SamSquare {
                     );
                 }
             } catch (SamSquareException e) {
-                System.out.println(" WAIT PAUSE!! " + e.getMessage());
-                System.out.println(LINE_SEPARATOR);
+                ui.showError(e.getMessage());
             }
         }
-
-        scanner.close();
     }
 
-    private static void listTasks(ArrayList<Task> tasks) {
-        System.out.println(" Here are the tasks in your list:");
-
-        for (int i = 0; i < tasks.size(); i++) {
-            System.out.println(" " + (i + 1) + ".["
-                    + tasks.get(i).getTypeIcon() + "]["
-                    + tasks.get(i).getStatusIcon() + "] "
-                    + tasks.get(i).getFullDescription());
-        }
-
-        System.out.println(LINE_SEPARATOR);
-    }
-
-    private static void markTask(String message, ArrayList<Task> tasks)
+    /**
+     * Validates the requested task number before marking the task as done.
+     */
+    private void markTask(String message, ArrayList<Task> tasks)
             throws SamSquareException {
         String numberText = message.substring(MARK_COMMAND.length()).trim();
 
@@ -170,13 +158,13 @@ public class SamSquare {
         Task task = tasks.get(taskIndex);
         task.markAsDone();
 
-        System.out.println(" WELL DONE!! I've marked this task as done:");
-        System.out.println("   [" + task.getTypeIcon() + "][X] "
-                + task.getFullDescription());
-        System.out.println(LINE_SEPARATOR);
+        ui.showTaskStatus(task);
     }
 
-    private static void unmarkTask(String message, ArrayList<Task> tasks)
+    /**
+     * Validates the requested task number before marking the task as not done.
+     */
+    private void unmarkTask(String message, ArrayList<Task> tasks)
             throws SamSquareException {
         String numberText =
                 message.substring(UNMARK_COMMAND.length()).trim();
@@ -204,13 +192,13 @@ public class SamSquare {
         Task task = tasks.get(taskIndex);
         task.markAsNotDone();
 
-        System.out.println(" OK, I've marked this task as not done yet:");
-        System.out.println("   [" + task.getTypeIcon() + "][ ] "
-                + task.getFullDescription());
-        System.out.println(LINE_SEPARATOR);
+        ui.showTaskStatus(task);
     }
 
-    private static void deleteTask(String message, ArrayList<Task> tasks)
+    /**
+     * Validates the requested task number before removing the task.
+     */
+    private void deleteTask(String message, ArrayList<Task> tasks)
             throws SamSquareException {
 
         String numberText = message.substring(DELETE_COMMAND.length()).trim();
@@ -237,15 +225,13 @@ public class SamSquare {
 
         Task deletedTask = tasks.remove(taskIndex);
 
-        System.out.println(" Ahh noted! I've removed this task:");
-        System.out.println("   [" + deletedTask.getTypeIcon() + "]["
-                + deletedTask.getStatusIcon() + "] "
-                + deletedTask.getFullDescription());
-        System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
-        System.out.println(LINE_SEPARATOR);
+        ui.showDeletedTask(deletedTask, tasks.size());
     }
 
-    private static void checkTaskNumber(int taskNumber, int taskCount)
+    /**
+     * Rejects task numbers outside the current one-based list range.
+     */
+    private void checkTaskNumber(int taskNumber, int taskCount)
             throws SamSquareException {
 
         if (taskNumber < 1 || taskNumber > taskCount) {
@@ -255,7 +241,10 @@ public class SamSquare {
         }
     }
 
-    private static void addTodo(String message, ArrayList<Task> tasks)
+    /**
+     * Validates the description before adding a ToDo.
+     */
+    private void addTodo(String message, ArrayList<Task> tasks)
             throws SamSquareException {
         String description = message.substring(TODO_COMMAND.length()).trim();
 
@@ -265,15 +254,15 @@ public class SamSquare {
             );
         }
 
-        tasks.add(new Todo(description));
-
-        System.out.println(" Got it!! I've added this task:");
-        System.out.println("   [T][ ] " + description);
-        System.out.println(" Now you have " + tasks.size() + " tasks in the list :)");
-        System.out.println(LINE_SEPARATOR);
+        Task task = new Todo(description);
+        tasks.add(task);
+        ui.showAddedTask(task, tasks.size());
     }
 
-    private static void addDeadline(String message, ArrayList<Task> tasks)
+    /**
+     * Validates the deadline format before adding a task with its due date.
+     */
+    private void addDeadline(String message, ArrayList<Task> tasks)
             throws SamSquareException {
         String content = message.substring(DEADLINE_COMMAND.length()).trim();
         String[] parts = content.split(" /by ", 2);
@@ -287,7 +276,6 @@ public class SamSquare {
         String description = parts[0];
         String by = parts[1];
 
-
         if (description.isEmpty()) {
             throw new SamSquareException(
                     "HEY!! The description of a deadline cannot be empty!"
@@ -300,15 +288,15 @@ public class SamSquare {
             );
         }
 
-        tasks.add(new Deadline(description, by));
-
-        System.out.println(" Got it! I've added this task:");
-        System.out.println("   [D][ ] " + description + " (by: " + by + ")");
-        System.out.println(" Now you have " + tasks.size() + " tasks in the list :)");
-        System.out.println(LINE_SEPARATOR);
+        Task task = new Deadline(description, by);
+        tasks.add(task);
+        ui.showAddedTask(task, tasks.size());
     }
 
-    private static void addEvent(String message, ArrayList<Task> tasks)
+    /**
+     * Validates the event format before adding a task with its time range.
+     */
+    private void addEvent(String message, ArrayList<Task> tasks)
             throws SamSquareException {
         String content = message.substring(EVENT_COMMAND.length()).trim();
 
@@ -352,17 +340,8 @@ public class SamSquare {
             );
         }
 
-        tasks.add(new Event(description, from, to));
-
-        System.out.println(" Got it. I've added this task:");
-        System.out.println("   [E][ ] " + description
-                + " (from: " + from + " to: " + to + ")");
-        System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
-        System.out.println(LINE_SEPARATOR);
-    }
-
-    private static void printGoodbyeMessage() {
-        System.out.println("Byebye hope to see you again soon!");
-        System.out.println(LINE_SEPARATOR);
+        Task task = new Event(description, from, to);
+        tasks.add(task);
+        ui.showAddedTask(task, tasks.size());
     }
 }

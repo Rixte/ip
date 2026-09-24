@@ -77,6 +77,13 @@ commands, plus checks that rejected commands leave task state unchanged.
 
 Before running a session:
 
+0. Establish the documented storage state as well as the in-memory state.
+   The earlier plan assumed a fresh process had no tasks, but `Storage.load`
+   reads existing saved tasks. For empty-list cases, use a fresh working
+   directory with no task file; never overwrite the user's saved tasks.
+   Capture and compare the greeting and its separator against the test plan
+   before sending the first command, since command-only comparisons miss
+   startup display regressions.
 1. Map each user-facing command and validation rule to at least one test case.
 2. Identify important branches that have only a successful case or only a
    failing case, and add the missing counterpart when the requirement is known.
