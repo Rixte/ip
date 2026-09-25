@@ -66,7 +66,9 @@ The tests should cover the actual console behaviour of SamSquare, including:
 * listing tasks;
 * marking tasks as done;
 * unmarking tasks;
-* storing arbitrary date/time strings;
+* accepting valid ISO deadline dates and displaying English month names;
+* rejecting invalid deadline dates without changing state;
+* preserving arbitrary event time strings;
 * handling multiple task types together;
 * exiting with `bye`.
 
@@ -107,6 +109,20 @@ Before running a session:
    into command classes, restart immediately after each distinct mutation
    (add, mark, unmark, delete) and compare the loaded state before any further
    mutation can save it.
+7. Deadline representation changes must be checked through both input and
+   storage loading. Include a valid leap day, an invalid leap day, an invalid
+   month/day, a wrong format, and a reload of the saved ISO date. For legacy
+   invalid dates, verify that a save preserves an exact backup of the original
+   file. Do not test only new commands: old saved data uses a separate path.
+
+## Repeatable Runner
+
+Run `python test/run-ui-tests.py <session-name>` with Java 25 available on PATH.
+The runner reads this plan, compares console responses, and stops at the first
+failure. It uses an isolated temporary data directory and writes the transcript
+to `_temp/<session-name>/console-record.txt`. Keep the runner in version control:
+earlier verification scripts were only in ignored `_temp`, preventing a fresh
+checkout from reproducing the same automatic comparisons.
 
 ## Optional Mutation Check
 
