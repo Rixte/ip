@@ -15,7 +15,7 @@ and press Enter to manage your tasks.
 
 In the formats below, replace `UPPERCASE` words with your own values. All values
 are required; descriptions can contain spaces. Use lowercase command names.
-Spaces before and after a command are ignored: `  list  ` works like `list`.
+Spaces before and after a command are ignored, so you can enter `list` with extra spaces.
 Keep spaces around `/by`, `/from`, and `/to`. Commands `list` and `bye` take no extra words.
 
 ### Adding a ToDo: `todo`
@@ -105,7 +105,7 @@ Enter `bye` to close SamSquare.
 
 Changes are saved automatically to `data/samsquare.txt` and loaded next time.
 Always launch from the same working directory to use the same file. Copy this
-file to keep a backup. Avoid ` | ` in descriptions and event times, as it can
+file to keep a backup. Avoid a vertical bar (`|`) surrounded by spaces in descriptions and event times, as it can
 prevent tasks from reloading correctly.
 
 ## If something goes wrong

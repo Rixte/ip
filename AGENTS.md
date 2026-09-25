@@ -161,6 +161,12 @@ After every code update:
 
 ## Continuous AI Improvement
 
+For User Guide changes, check the deployed GitHub Pages HTML as well as the
+Markdown source. Inline code with spaces just inside backticks rendered as
+literal backticks on Pages even though a local GFM preview parsed it as code.
+Describe surrounding spaces in prose or use a fenced code block instead. A
+local Markdown preview alone does not verify the deployed Pages rendering.
+
 Treat the repository's AI guidance as a living part of the project.
 
 1. During each task, note concrete cases where AI-generated work, review, or
