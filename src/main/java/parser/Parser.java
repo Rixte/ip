@@ -25,24 +25,25 @@ public class Parser {
     private final String command;
 
     /**
-     * Recognizes a command while preserving its original whitespace rules.
+     * Recognizes a command after removing surrounding whitespace.
+     * Spaces within descriptions and other arguments are preserved.
      *
      * @param fullCommand Complete line entered by the user.
      * @throws SamSquareException If the input is empty or the command is unknown.
      */
     public Parser(String fullCommand) throws SamSquareException {
-        if (fullCommand.trim().isEmpty()) {
+        this.fullCommand = fullCommand.trim();
+        if (this.fullCommand.isEmpty()) {
             throw new SamSquareException("Please don't leave your input empty D:");
         }
 
-        this.fullCommand = fullCommand;
-        int separatorIndex = fullCommand.indexOf(' ');
-        command = separatorIndex == -1 ? fullCommand : fullCommand.substring(0, separatorIndex);
+        int separatorIndex = this.fullCommand.indexOf(' ');
+        command = separatorIndex == -1 ? this.fullCommand : this.fullCommand.substring(0, separatorIndex);
 
-        // Only commands with arguments accept a space after the command name.
+        // No-argument commands still reject additional words after normalization.
         boolean isKnownCommand = switch (command) {
             case "todo", "deadline", "event", "mark", "unmark", "delete", "find" -> true;
-            case "list", "bye" -> fullCommand.equals(command);
+            case "list", "bye" -> this.fullCommand.equals(command);
             default -> false;
         };
         if (!isKnownCommand) {
@@ -103,17 +104,9 @@ public class Parser {
             throw new IllegalStateException("This command does not use a task number.");
         }
 
-        // Bare commands and commands followed by spaces have distinct existing messages.
-        if (fullCommand.equals(command)) {
-            throw new SamSquareException("Specify the task number to " + command + " please!");
-        }
-
         String numberText = getArguments();
         if (numberText.isEmpty()) {
-            String message = command.equals("delete")
-                    ? "Specify which task you want to delete please! D:"
-                    : "Please specify which task you want to " + command + ".";
-            throw new SamSquareException(message);
+            throw new SamSquareException("Specify the task number to " + command + " please!");
         }
 
         try {

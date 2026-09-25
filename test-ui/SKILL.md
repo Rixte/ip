@@ -114,6 +114,11 @@ Before running a session:
    month/day, a wrong format, and a reload of the saved ISO date. For legacy
    invalid dates, verify that a save preserves an exact backup of the original
    file. Do not test only new commands: old saved data uses a separate path.
+8. The runner previously recognized only an exact `bye` when checking process
+   termination. When surrounding command whitespace is accepted, send the
+   original padded input unchanged and check termination for padded `bye` too.
+   Cover leading-only, trailing-only, and combined padding, plus preserved
+   internal description spaces and rejected extra arguments.
 
 ## Repeatable Runner
 

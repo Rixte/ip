@@ -14,9 +14,9 @@ and press Enter to manage your tasks.
 ## Features
 
 In the formats below, replace `UPPERCASE` words with your own values. All values
-are required; descriptions can contain spaces. Use lowercase command names
-without leading spaces, and keep spaces around `/by`, `/from`, and `/to`.
-Type `list` and `bye` exactly, without trailing spaces or extra words.
+are required; descriptions can contain spaces. Use lowercase command names.
+Spaces before and after a command are ignored: `  list  ` works like `list`.
+Keep spaces around `/by`, `/from`, and `/to`. Commands `list` and `bye` take no extra words.
 
 ### Adding a ToDo: `todo`
 

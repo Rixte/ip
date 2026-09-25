@@ -106,7 +106,7 @@ with tempfile.TemporaryDirectory(prefix='samsquare-ui-') as work:
                 transcript.append('CASE ' + title + '\nINPUT ' + repr(command) + '\n' + actual)
                 compare(actual, wanted + separator, 'Case ' + title + ', input ' + repr(command))
                 count += 1
-                if command == 'bye':
+                if command.strip() == 'bye':
                     process.stdin.close()
                     assert process.wait(timeout=10) == 0
                     assert lines.get(timeout=10) is None, 'Unexpected output after bye'

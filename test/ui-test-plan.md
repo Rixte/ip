@@ -2,9 +2,10 @@
 
 This plan tests SamSquare through its actual console interface. Run the cases in
 order. Test Case 1 starts with an empty task list. Cases 2–17 continue in
-the same process; Cases 18–33 explicitly restart the process while keeping
-the isolated task file from the preceding case. Stop at the first failure.
-Every `bye` must terminate its process after the response separator.
+the same process; Cases 18–35 explicitly restart the process with the saved
+state or replacement fixture specified in each case. Stop at the first failure.
+Every `bye`, including one surrounded by spaces, must terminate its process
+after the response separator.
 
 Run the process in a fresh working directory with no `data/samsquare.txt`, so
 saved personal tasks do not affect the starting state. Compile and run using
@@ -36,7 +37,10 @@ ____________________________________________________________
 The separator is part of the expected output for every case, although it is
 shown once here to keep the cases readable. Leading spaces inside output blocks
 are significant. Input markers `<one trailing space>` and `<three spaces>`
-stand for literal spaces, including when appended to a command.
+stand for literal spaces, including when placed before or after a command.
+Leading and trailing command spaces are ignored; internal description spaces
+are preserved. Padded commands with missing arguments have the same errors as
+their unpadded equivalents.
 
 ## Test Case 1: List an empty collection
 
@@ -456,7 +460,7 @@ list
 Expected responses:
 
 ```text
- WAIT PAUSE!! Please specify which task you want to mark.
+ WAIT PAUSE!! Specify the task number to mark please!
 ```
 
 ```text
@@ -466,7 +470,7 @@ Expected responses:
 ```
 
 ```text
- WAIT PAUSE!! Please specify which task you want to unmark.
+ WAIT PAUSE!! Specify the task number to unmark please!
 ```
 
 ```text
@@ -476,7 +480,7 @@ Expected responses:
 ```
 
 ```text
- WAIT PAUSE!! Specify which task you want to delete please! D:
+ WAIT PAUSE!! Specify the task number to delete please!
 ```
 
 ```text
@@ -555,7 +559,7 @@ Expected responses:
  2.[T][ ] buy groceries
 ```
 
-## Test Case 14: Keep command names and no-argument commands exact
+## Test Case 14: Accept surrounding spaces but reject unknown names and extra words
 
 Continues the state left by Test Case 13.
 
@@ -572,7 +576,7 @@ list
 list
 list<one trailing space>
 list
-bye<one trailing space>
+bye extra<one trailing space>
 list
 ```
 
@@ -609,7 +613,9 @@ Expected responses:
 ```
 
 ```text
- WAIT PAUSE!! Hold up... I don't recognise that command. Please use todo, deadline, event, mark, unmark, delete, find, list or bye.
+ Here are the tasks in your list:
+ 1.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+ 2.[T][ ] buy groceries
 ```
 
 ```text
@@ -619,7 +625,9 @@ Expected responses:
 ```
 
 ```text
- WAIT PAUSE!! Hold up... I don't recognise that command. Please use todo, deadline, event, mark, unmark, delete, find, list or bye.
+ Here are the tasks in your list:
+ 1.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+ 2.[T][ ] buy groceries
 ```
 
 ```text
@@ -645,12 +653,12 @@ Continues the state left by Test Case 14.
 Input:
 
 ```text
-todo   check parser<three spaces>
-mark   3<three spaces>
+<three spaces>todo   check parser<three spaces>
+<three spaces>mark   3<three spaces>
 list
-unmark   3<three spaces>
+<three spaces>unmark   3<three spaces>
 list
-delete   3<three spaces>
+<three spaces>delete   3<three spaces>
 list
 ```
 
@@ -823,7 +831,7 @@ Continues the state left by Test Case 16.
 Input:
 
 ```text
-bye
+bye<one trailing space>
 ```
 
 Expected responses:
@@ -1566,6 +1574,175 @@ Expected responses:
  5.[T][X] read book
  6.[E][ ] book club (from: noon to: evening)
  7.[T][ ] notebook
+```
+
+```text
+Byebye hope to see you again soon!
+```
+
+## Test Case 34: Accept padding for every command while preserving task text
+
+Starts a new process in the isolated working directory after Case 33.
+Replace its saved file with the empty fixture below and compare the standard greeting.
+The double space in `read  book` must remain in the task description.
+After every rejected command, `list` must show the unchanged two tasks.
+
+Saved file before startup:
+
+```text
+```
+
+Input:
+
+```text
+<three spaces>todo read  book<three spaces>
+<three spaces>deadline return book /by 2019-10-15<three spaces>
+<three spaces>event book club /from Mon 2pm /to 4pm<three spaces>
+<three spaces>find book<three spaces>
+<three spaces>mark 2<three spaces>
+<three spaces>unmark 2<three spaces>
+<three spaces>delete 1<three spaces>
+<three spaces>list<three spaces>
+<three spaces>deadline rejected /by Friday<three spaces>
+list
+<three spaces>todo<three spaces>
+list
+<three spaces>find<three spaces>
+list
+<three spaces>mark 0<three spaces>
+list
+<three spaces>list extra<three spaces>
+list
+<three spaces>bye<three spaces>
+```
+
+Expected responses:
+
+```text
+ Got it!! I've added this task:
+   [T][ ] read  book
+ Now you have 1 tasks in the list :)
+```
+
+```text
+ Got it! I've added this task:
+   [D][ ] return book (by: Oct 15 2019)
+ Now you have 2 tasks in the list :)
+```
+
+```text
+ Got it. I've added this task:
+   [E][ ] book club (from: Mon 2pm to: 4pm)
+ Now you have 3 tasks in the list.
+```
+
+```text
+ Here are the matching tasks in your list:
+ 1.[T][ ] read  book
+ 2.[D][ ] return book (by: Oct 15 2019)
+ 3.[E][ ] book club (from: Mon 2pm to: 4pm)
+```
+
+```text
+ WELL DONE!! I've marked this task as done:
+   [D][X] return book (by: Oct 15 2019)
+```
+
+```text
+ OK, I've marked this task as not done yet:
+   [D][ ] return book (by: Oct 15 2019)
+```
+
+```text
+ Ahh noted! I've removed this task:
+   [T][ ] read  book
+ Now you have 2 tasks in the list.
+```
+
+```text
+ Here are the tasks in your list:
+ 1.[D][ ] return book (by: Oct 15 2019)
+ 2.[E][ ] book club (from: Mon 2pm to: 4pm)
+```
+
+```text
+ WAIT PAUSE!! Use a valid deadline date in yyyy-MM-dd format (e.g., 2019-10-15).
+```
+
+```text
+ Here are the tasks in your list:
+ 1.[D][ ] return book (by: Oct 15 2019)
+ 2.[E][ ] book club (from: Mon 2pm to: 4pm)
+```
+
+```text
+ WAIT PAUSE!! HEY!! The description of a todo cannot be empty!
+```
+
+```text
+ Here are the tasks in your list:
+ 1.[D][ ] return book (by: Oct 15 2019)
+ 2.[E][ ] book club (from: Mon 2pm to: 4pm)
+```
+
+```text
+ WAIT PAUSE!! Please specify a keyword to find.
+```
+
+```text
+ Here are the tasks in your list:
+ 1.[D][ ] return book (by: Oct 15 2019)
+ 2.[E][ ] book club (from: Mon 2pm to: 4pm)
+```
+
+```text
+ WAIT PAUSE!! There is no task numbered 0.
+```
+
+```text
+ Here are the tasks in your list:
+ 1.[D][ ] return book (by: Oct 15 2019)
+ 2.[E][ ] book club (from: Mon 2pm to: 4pm)
+```
+
+```text
+ WAIT PAUSE!! Hold up... I don't recognise that command. Please use todo, deadline, event, mark, unmark, delete, find, list or bye.
+```
+
+```text
+ Here are the tasks in your list:
+ 1.[D][ ] return book (by: Oct 15 2019)
+ 2.[E][ ] book club (from: Mon 2pm to: 4pm)
+```
+
+```text
+Byebye hope to see you again soon!
+```
+
+## Test Case 35: Reload padded commands and exit with a leading space
+
+Starts a new process in the same isolated working directory, retaining
+the task file from Case 34. Compare the standard greeting.
+
+Input:
+
+```text
+list
+<three spaces>find return book<three spaces>
+ bye
+```
+
+Expected responses:
+
+```text
+ Here are the tasks in your list:
+ 1.[D][ ] return book (by: Oct 15 2019)
+ 2.[E][ ] book club (from: Mon 2pm to: 4pm)
+```
+
+```text
+ Here are the matching tasks in your list:
+ 1.[D][ ] return book (by: Oct 15 2019)
 ```
 
 ```text
