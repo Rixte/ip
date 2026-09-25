@@ -7,6 +7,7 @@ import commands.AddCommand;
 import commands.Command;
 import commands.DeleteCommand;
 import commands.ExitCommand;
+import commands.FindCommand;
 import commands.ListCommand;
 import commands.MarkCommand;
 import commands.UnmarkCommand;
@@ -40,7 +41,7 @@ public class Parser {
 
         // Only commands with arguments accept a space after the command name.
         boolean isKnownCommand = switch (command) {
-            case "todo", "deadline", "event", "mark", "unmark", "delete" -> true;
+            case "todo", "deadline", "event", "mark", "unmark", "delete", "find" -> true;
             case "list", "bye" -> fullCommand.equals(command);
             default -> false;
         };
@@ -48,7 +49,7 @@ public class Parser {
             throw new SamSquareException(
                     "Hold up... I don't recognise that command. "
                             + "Please use todo, deadline, event, mark, "
-                            + "unmark, list or bye."
+                            + "unmark, delete, find, list or bye."
             );
         }
     }
@@ -68,6 +69,7 @@ public class Parser {
             case "delete" -> new DeleteCommand(parseTaskNumber());
             case "mark" -> new MarkCommand(parseTaskNumber());
             case "unmark" -> new UnmarkCommand(parseTaskNumber());
+            case "find" -> parseFind();
             default -> throw new IllegalStateException("Parser contains an unsupported command.");
         };
     }
@@ -126,6 +128,17 @@ public class Parser {
 
     private String getArguments() {
         return fullCommand.substring(command.length()).trim();
+    }
+
+    /**
+     * Rejects empty searches and preserves internal spaces in a search phrase.
+     */
+    private Command parseFind() throws SamSquareException {
+        String keyword = getArguments();
+        if (keyword.isEmpty()) {
+            throw new SamSquareException("Please specify a keyword to find.");
+        }
+        return new FindCommand(keyword);
     }
 
     /**

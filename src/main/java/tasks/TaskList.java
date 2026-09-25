@@ -93,6 +93,23 @@ public class TaskList {
     }
 
     /**
+     * Finds descriptions containing the exact search text, retaining task order.
+     * Dates and status markers are not part of the searched description.
+     *
+     * @param keyword Non-empty case-sensitive text to find.
+     * @return A separate list of matching task references, possibly empty.
+     */
+    public List<Task> find(String keyword) {
+        List<Task> matches = new ArrayList<>();
+        for (Task task : tasks) {
+            if (task.getDescription().contains(keyword)) {
+                matches.add(task);
+            }
+        }
+        return matches;
+    }
+
+    /**
      * Converts a valid displayed number to a zero-based index before any mutation.
      */
     private int getTaskIndex(int taskNumber) throws SamSquareException {
