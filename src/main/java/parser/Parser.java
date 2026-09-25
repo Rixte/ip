@@ -126,12 +126,20 @@ public class Parser {
         }
     }
 
+    /**
+     * Removes the recognized command name and surrounding argument whitespace.
+     *
+     * @return The argument text, preserving internal spaces.
+     */
     private String getArguments() {
         return fullCommand.substring(command.length()).trim();
     }
 
     /**
      * Rejects empty searches and preserves internal spaces in a search phrase.
+     *
+     * @return A command containing the non-empty search text.
+     * @throws SamSquareException If the search text is empty.
      */
     private Command parseFind() throws SamSquareException {
         String keyword = getArguments();
@@ -143,6 +151,9 @@ public class Parser {
 
     /**
      * Validates the description before creating a ToDo.
+     *
+     * @return The new incomplete ToDo.
+     * @throws SamSquareException If the description is empty.
      */
     private Task parseTodo() throws SamSquareException {
         String description = getArguments();
@@ -158,6 +169,9 @@ public class Parser {
 
     /**
      * Validates the deadline format before creating a task with its due date.
+     *
+     * @return The new deadline containing a calendar date.
+     * @throws SamSquareException If the description, separator, or ISO date is invalid.
      */
     private Task parseDeadline() throws SamSquareException {
         String content = getArguments();
@@ -193,6 +207,9 @@ public class Parser {
 
     /**
      * Validates the event format before creating a task with its time range.
+     *
+     * @return The new event with its start and end time text.
+     * @throws SamSquareException If the description or required time components are missing.
      */
     private Task parseEvent() throws SamSquareException {
         String content = getArguments();

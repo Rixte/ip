@@ -64,6 +64,9 @@ public class Ui implements AutoCloseable {
 
     /**
      * Uses the same numbering and task format for full lists and search results.
+     *
+     * @param tasks Tasks to display, in result order.
+     * @param heading Heading identifying the kind of list being displayed.
      */
     private void showTaskList(List<Task> tasks, String heading) {
         System.out.println(heading);
@@ -139,11 +142,20 @@ public class Ui implements AutoCloseable {
         showLine();
     }
 
+    /**
+     * Combines type, completion status, and details into one console task entry.
+     *
+     * @param task Task to format.
+     * @return The task entry without indentation or a list number.
+     */
     private String formatTask(Task task) {
         return "[" + task.getTypeIcon() + "][" + task.getStatusIcon() + "] "
                 + task.getFullDescription();
     }
 
+    /**
+     * Prints the separator that terminates a console response.
+     */
     private void showLine() {
         System.out.println(LINE_SEPARATOR);
     }
