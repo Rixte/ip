@@ -2,7 +2,7 @@
 
 This plan tests SamSquare through its actual console interface. Run the cases in
 order. Test Case 1 starts with an empty task list. Cases 2–17 continue in
-the same process; Cases 18–30 explicitly restart the process while keeping
+the same process; Cases 18–33 explicitly restart the process while keeping
 the isolated task file from the preceding case. Stop at the first failure.
 Every `bye` must terminate its process after the response separator.
 
@@ -415,7 +415,7 @@ Expected responses:
 ```
 
 ```text
- WAIT PAUSE!! Hold up... I don't recognise that command. Please use todo, deadline, event, mark, unmark, list or bye.
+ WAIT PAUSE!! Hold up... I don't recognise that command. Please use todo, deadline, event, mark, unmark, delete, find, list or bye.
 ```
 
 ```text
@@ -579,7 +579,7 @@ list
 Expected responses:
 
 ```text
- WAIT PAUSE!! Hold up... I don't recognise that command. Please use todo, deadline, event, mark, unmark, list or bye.
+ WAIT PAUSE!! Hold up... I don't recognise that command. Please use todo, deadline, event, mark, unmark, delete, find, list or bye.
 ```
 
 ```text
@@ -589,7 +589,7 @@ Expected responses:
 ```
 
 ```text
- WAIT PAUSE!! Hold up... I don't recognise that command. Please use todo, deadline, event, mark, unmark, list or bye.
+ WAIT PAUSE!! Hold up... I don't recognise that command. Please use todo, deadline, event, mark, unmark, delete, find, list or bye.
 ```
 
 ```text
@@ -599,7 +599,7 @@ Expected responses:
 ```
 
 ```text
- WAIT PAUSE!! Hold up... I don't recognise that command. Please use todo, deadline, event, mark, unmark, list or bye.
+ WAIT PAUSE!! Hold up... I don't recognise that command. Please use todo, deadline, event, mark, unmark, delete, find, list or bye.
 ```
 
 ```text
@@ -609,7 +609,7 @@ Expected responses:
 ```
 
 ```text
- WAIT PAUSE!! Hold up... I don't recognise that command. Please use todo, deadline, event, mark, unmark, list or bye.
+ WAIT PAUSE!! Hold up... I don't recognise that command. Please use todo, deadline, event, mark, unmark, delete, find, list or bye.
 ```
 
 ```text
@@ -619,7 +619,7 @@ Expected responses:
 ```
 
 ```text
- WAIT PAUSE!! Hold up... I don't recognise that command. Please use todo, deadline, event, mark, unmark, list or bye.
+ WAIT PAUSE!! Hold up... I don't recognise that command. Please use todo, deadline, event, mark, unmark, delete, find, list or bye.
 ```
 
 ```text
@@ -629,7 +629,7 @@ Expected responses:
 ```
 
 ```text
- WAIT PAUSE!! Hold up... I don't recognise that command. Please use todo, deadline, event, mark, unmark, list or bye.
+ WAIT PAUSE!! Hold up... I don't recognise that command. Please use todo, deadline, event, mark, unmark, delete, find, list or bye.
 ```
 
 ```text
@@ -1352,3 +1352,222 @@ Byebye hope to see you again soon!
 
 The runner also verifies that every saved deadline date uses ISO format and
 that all expected output matches under a non-English default Java locale.
+
+## Test Case 31: Find descriptions only and reject empty searches
+
+Starts a new process in the same isolated working directory, retaining
+the file from Test Case 30. Compare the standard greeting.
+
+Input:
+
+```text
+find valid
+find e
+find noon
+find Feb
+find BEFORE
+find
+list
+find<three spaces>
+list
+bye
+```
+
+Expected responses:
+
+```text
+ Here are the matching tasks in your list:
+ 1.[D][X] valid saved date (by: Feb 29 2024)
+```
+
+```text
+ Here are the matching tasks in your list:
+ 1.[T][ ] before
+ 2.[D][X] valid saved date (by: Feb 29 2024)
+ 3.[E][ ] after (from: noon to: evening)
+ 4.[T][ ] keep
+```
+
+```text
+ Here are the matching tasks in your list:
+```
+
+```text
+ Here are the matching tasks in your list:
+```
+
+```text
+ Here are the matching tasks in your list:
+```
+
+```text
+ WAIT PAUSE!! Please specify a keyword to find.
+```
+
+```text
+ Here are the tasks in your list:
+ 1.[T][ ] before
+ 2.[D][X] valid saved date (by: Feb 29 2024)
+ 3.[E][ ] after (from: noon to: evening)
+ 4.[T][ ] keep
+```
+
+```text
+ WAIT PAUSE!! Please specify a keyword to find.
+```
+
+```text
+ Here are the tasks in your list:
+ 1.[T][ ] before
+ 2.[D][X] valid saved date (by: Feb 29 2024)
+ 3.[E][ ] after (from: noon to: evening)
+ 4.[T][ ] keep
+```
+
+```text
+Byebye hope to see you again soon!
+```
+
+## Test Case 32: Search mixed tasks and preserve original task numbering
+
+Starts a new process in the same isolated working directory, retaining
+the file from Test Case 31. Compare the standard greeting.
+
+Input:
+
+```text
+todo read book
+deadline return book /by 2019-10-15
+event book club /from noon /to evening
+mark 5
+todo notebook
+find book
+find book
+find   read book<three spaces>
+find Book
+delete 6
+find book
+list
+bye
+```
+
+Expected responses:
+
+```text
+ Got it!! I've added this task:
+   [T][ ] read book
+ Now you have 5 tasks in the list :)
+```
+
+```text
+ Got it! I've added this task:
+   [D][ ] return book (by: Oct 15 2019)
+ Now you have 6 tasks in the list :)
+```
+
+```text
+ Got it. I've added this task:
+   [E][ ] book club (from: noon to: evening)
+ Now you have 7 tasks in the list.
+```
+
+```text
+ WELL DONE!! I've marked this task as done:
+   [T][X] read book
+```
+
+```text
+ Got it!! I've added this task:
+   [T][ ] notebook
+ Now you have 8 tasks in the list :)
+```
+
+```text
+ Here are the matching tasks in your list:
+ 1.[T][X] read book
+ 2.[D][ ] return book (by: Oct 15 2019)
+ 3.[E][ ] book club (from: noon to: evening)
+ 4.[T][ ] notebook
+```
+
+```text
+ Here are the matching tasks in your list:
+ 1.[T][X] read book
+ 2.[D][ ] return book (by: Oct 15 2019)
+ 3.[E][ ] book club (from: noon to: evening)
+ 4.[T][ ] notebook
+```
+
+```text
+ Here are the matching tasks in your list:
+ 1.[T][X] read book
+```
+
+```text
+ Here are the matching tasks in your list:
+```
+
+```text
+ Ahh noted! I've removed this task:
+   [D][ ] return book (by: Oct 15 2019)
+ Now you have 7 tasks in the list.
+```
+
+```text
+ Here are the matching tasks in your list:
+ 1.[T][X] read book
+ 2.[E][ ] book club (from: noon to: evening)
+ 3.[T][ ] notebook
+```
+
+```text
+ Here are the tasks in your list:
+ 1.[T][ ] before
+ 2.[D][X] valid saved date (by: Feb 29 2024)
+ 3.[E][ ] after (from: noon to: evening)
+ 4.[T][ ] keep
+ 5.[T][X] read book
+ 6.[E][ ] book club (from: noon to: evening)
+ 7.[T][ ] notebook
+```
+
+```text
+Byebye hope to see you again soon!
+```
+
+## Test Case 33: Find after reloading the modified list
+
+Starts a new process in the same isolated working directory, retaining
+the file from Test Case 32. Compare the standard greeting.
+
+Input:
+
+```text
+find book
+list
+bye
+```
+
+Expected responses:
+
+```text
+ Here are the matching tasks in your list:
+ 1.[T][X] read book
+ 2.[E][ ] book club (from: noon to: evening)
+ 3.[T][ ] notebook
+```
+
+```text
+ Here are the tasks in your list:
+ 1.[T][ ] before
+ 2.[D][X] valid saved date (by: Feb 29 2024)
+ 3.[E][ ] after (from: noon to: evening)
+ 4.[T][ ] keep
+ 5.[T][X] read book
+ 6.[E][ ] book club (from: noon to: evening)
+ 7.[T][ ] notebook
+```
+
+```text
+Byebye hope to see you again soon!
+```

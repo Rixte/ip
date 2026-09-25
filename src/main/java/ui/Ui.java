@@ -50,7 +50,23 @@ public class Ui implements AutoCloseable {
      * @param tasks Tasks to display.
      */
     public void showTasks(List<Task> tasks) {
-        System.out.println(" Here are the tasks in your list:");
+        showTaskList(tasks, " Here are the tasks in your list:");
+    }
+
+    /**
+     * Displays matching tasks with consecutive result numbers starting at one.
+     *
+     * @param tasks Search results in their original order.
+     */
+    public void showMatchingTasks(List<Task> tasks) {
+        showTaskList(tasks, " Here are the matching tasks in your list:");
+    }
+
+    /**
+     * Uses the same numbering and task format for full lists and search results.
+     */
+    private void showTaskList(List<Task> tasks, String heading) {
+        System.out.println(heading);
         for (int i = 0; i < tasks.size(); i++) {
             System.out.println(" " + (i + 1) + "." + formatTask(tasks.get(i)));
         }
