@@ -4,7 +4,6 @@ import commands.Command;
 import exception.SamSquareException;
 import parser.Parser;
 import storage.Storage;
-import tasks.Task;
 import tasks.TaskList;
 
 /**
@@ -40,37 +39,10 @@ public class SamSquare {
 
         while (true) {
             try {
-                Parser parser = new Parser(ui.readCommand());
-                switch (parser.getCommand()) {
-                    case "list", "bye" -> {
-                        Command command = parser.parseCommand();
-                        command.execute(tasks, ui);
-                        if (command.isExit()) {
-                            return;
-                        }
-                    }
-                    case "mark" -> {
-                        Task task = tasks.mark(parser.parseTaskNumber());
-                        ui.showTaskStatus(task);
-                        Storage.save(tasks.getTasks());
-                    }
-                    case "unmark" -> {
-                        Task task = tasks.unmark(parser.parseTaskNumber());
-                        ui.showTaskStatus(task);
-                        Storage.save(tasks.getTasks());
-                    }
-                    case "delete" -> {
-                        Task task = tasks.delete(parser.parseTaskNumber());
-                        ui.showDeletedTask(task, tasks.size());
-                        Storage.save(tasks.getTasks());
-                    }
-                    case "todo", "deadline", "event" -> {
-                        Task task = parser.parseTask();
-                        tasks.add(task);
-                        ui.showAddedTask(task, tasks.size());
-                        Storage.save(tasks.getTasks());
-                    }
-                    default -> throw new IllegalStateException("Parser returned an unsupported command.");
+                Command command = new Parser(ui.readCommand()).parseCommand();
+                command.execute(tasks, ui);
+                if (command.isExit()) {
+                    return;
                 }
             } catch (SamSquareException e) {
                 ui.showError(e.getMessage());

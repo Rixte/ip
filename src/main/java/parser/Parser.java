@@ -1,8 +1,12 @@
 package parser;
 
+import commands.AddCommand;
 import commands.Command;
+import commands.DeleteCommand;
 import commands.ExitCommand;
 import commands.ListCommand;
+import commands.MarkCommand;
+import commands.UnmarkCommand;
 import exception.SamSquareException;
 import tasks.Deadline;
 import tasks.Event;
@@ -47,26 +51,21 @@ public class Parser {
     }
 
     /**
-     * Returns the recognized command name for dispatch by the application.
+     * Creates an executable command after validating its text arguments.
+     * Task numbers are checked against the current list when the command executes.
      *
-     * @return A supported command name.
+     * @return The command described by the user's input.
+     * @throws SamSquareException If a required argument is missing or malformed.
      */
-    public String getCommand() {
-        return command;
-    }
-
-    /**
-     * Creates an executable list or exit command.
-     * Task-changing commands remain dispatched by the application during extraction.
-     *
-     * @return The executable command for list or bye.
-     * @throws IllegalStateException If this command has not been extracted yet.
-     */
-    public Command parseCommand() {
+    public Command parseCommand() throws SamSquareException {
         return switch (command) {
             case "list" -> new ListCommand();
             case "bye" -> new ExitCommand();
-            default -> throw new IllegalStateException("This command has not been extracted yet.");
+            case "todo", "deadline", "event" -> new AddCommand(parseTask());
+            case "delete" -> new DeleteCommand(parseTaskNumber());
+            case "mark" -> new MarkCommand(parseTaskNumber());
+            case "unmark" -> new UnmarkCommand(parseTaskNumber());
+            default -> throw new IllegalStateException("Parser contains an unsupported command.");
         };
     }
 
@@ -77,7 +76,7 @@ public class Parser {
      * @throws SamSquareException If the task description or format is invalid.
      * @throws IllegalStateException If this command does not add a task.
      */
-    public Task parseTask() throws SamSquareException {
+    private Task parseTask() throws SamSquareException {
         return switch (command) {
             case "todo" -> parseTodo();
             case "deadline" -> parseDeadline();
@@ -94,7 +93,7 @@ public class Parser {
      * @throws SamSquareException If the number is missing or is not an integer.
      * @throws IllegalStateException If this command does not use a task number.
      */
-    public int parseTaskNumber() throws SamSquareException {
+    private int parseTaskNumber() throws SamSquareException {
         if (!command.equals("mark") && !command.equals("unmark") && !command.equals("delete")) {
             throw new IllegalStateException("This command does not use a task number.");
         }

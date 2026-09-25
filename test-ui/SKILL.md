@@ -102,6 +102,11 @@ Before running a session:
    compare all task types, order, and status. Modify loaded tasks and reload
    again, including after deleting the final task. Check invalid task numbers
    on an empty list and numbers made invalid by a prior deletion.
+6. Earlier reload checks allowed a later mutation to save an earlier change,
+   masking a missing save in the earlier command. When moving persistence
+   into command classes, restart immediately after each distinct mutation
+   (add, mark, unmark, delete) and compare the loaded state before any further
+   mutation can save it.
 
 ## Optional Mutation Check
 

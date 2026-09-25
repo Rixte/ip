@@ -2,7 +2,7 @@
 
 This plan tests SamSquare through its actual console interface. Run the cases in
 order. Test Case 1 starts with an empty task list. Cases 2–17 continue in
-the same process; Cases 18–20 explicitly restart the process while keeping
+the same process; Cases 18–25 explicitly restart the process while keeping
 the isolated task file from the preceding case. Stop at the first failure.
 Every `bye` must terminate its process after the response separator.
 
@@ -927,6 +927,150 @@ Byebye hope to see you again soon!
 Starts a new process in the same isolated working directory, retaining
 the task file from Test Case 19. Compare the greeting above
 before sending the first command.
+
+Input:
+
+```text
+list
+bye
+```
+
+Expected responses:
+
+```text
+ Here are the tasks in your list:
+```
+
+```text
+Byebye hope to see you again soon!
+```
+
+## Test Case 21: Save immediately after adding a task
+
+Starts a new process in the same isolated working directory, retaining
+the task file from Test Case 20. Compare the greeting above
+before sending the first command. No intervening mutation may save
+the previous command's changes before this reload check.
+
+Input:
+
+```text
+todo checkpoint
+bye
+```
+
+Expected responses:
+
+```text
+ Got it!! I've added this task:
+   [T][ ] checkpoint
+ Now you have 1 tasks in the list :)
+```
+
+```text
+Byebye hope to see you again soon!
+```
+
+## Test Case 22: Reload the addition and save a mark
+
+Starts a new process in the same isolated working directory, retaining
+the task file from Test Case 21. Compare the greeting above
+before sending the first command. No intervening mutation may save
+the previous command's changes before this reload check.
+
+Input:
+
+```text
+list
+mark 1
+bye
+```
+
+Expected responses:
+
+```text
+ Here are the tasks in your list:
+ 1.[T][ ] checkpoint
+```
+
+```text
+ WELL DONE!! I've marked this task as done:
+   [T][X] checkpoint
+```
+
+```text
+Byebye hope to see you again soon!
+```
+
+## Test Case 23: Reload the mark and save an unmark
+
+Starts a new process in the same isolated working directory, retaining
+the task file from Test Case 22. Compare the greeting above
+before sending the first command. No intervening mutation may save
+the previous command's changes before this reload check.
+
+Input:
+
+```text
+list
+unmark 1
+bye
+```
+
+Expected responses:
+
+```text
+ Here are the tasks in your list:
+ 1.[T][X] checkpoint
+```
+
+```text
+ OK, I've marked this task as not done yet:
+   [T][ ] checkpoint
+```
+
+```text
+Byebye hope to see you again soon!
+```
+
+## Test Case 24: Reload the unmark and save a deletion
+
+Starts a new process in the same isolated working directory, retaining
+the task file from Test Case 23. Compare the greeting above
+before sending the first command. No intervening mutation may save
+the previous command's changes before this reload check.
+
+Input:
+
+```text
+list
+delete 1
+bye
+```
+
+Expected responses:
+
+```text
+ Here are the tasks in your list:
+ 1.[T][ ] checkpoint
+```
+
+```text
+ Ahh noted! I've removed this task:
+   [T][ ] checkpoint
+ Now you have 0 tasks in the list.
+```
+
+```text
+Byebye hope to see you again soon!
+```
+
+## Test Case 25: Reload the deletion
+
+Starts a new process in the same isolated working directory, retaining
+the task file from Test Case 24. Compare the greeting above
+before sending the first command. No intervening mutation may save
+the previous command's changes before this reload check.
 
 Input:
 
