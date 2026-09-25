@@ -2,7 +2,7 @@
 
 This plan tests SamSquare through its actual console interface. Run the cases in
 order. Test Case 1 starts with an empty task list. Cases 2–17 continue in
-the same process; Cases 18–25 explicitly restart the process while keeping
+the same process; Cases 18–30 explicitly restart the process while keeping
 the isolated task file from the preceding case. Stop at the first failure.
 Every `bye` must terminate its process after the response separator.
 
@@ -77,7 +77,7 @@ Input:
 
 ```text
 todo borrow book
-deadline return book /by no idea :-p
+deadline return book /by 2019-10-15
 event project meeting /from Mon 2pm /to 4pm
 list
 ```
@@ -92,7 +92,7 @@ Expected responses:
 
 ```text
  Got it! I've added this task:
-   [D][ ] return book (by: no idea :-p)
+   [D][ ] return book (by: Oct 15 2019)
  Now you have 2 tasks in the list :)
 ```
 
@@ -105,11 +105,11 @@ Expected responses:
 ```text
  Here are the tasks in your list:
  1.[T][ ] borrow book
- 2.[D][ ] return book (by: no idea :-p)
+ 2.[D][ ] return book (by: Oct 15 2019)
  3.[E][ ] project meeting (from: Mon 2pm to: 4pm)
 ```
 
-This also verifies that arbitrary date/time strings are stored unchanged.
+This verifies formatted deadline dates and unchanged arbitrary event time strings.
 
 ## Test Case 4: Reject malformed Deadline commands without changing state
 
@@ -139,7 +139,7 @@ Expected responses:
 ```text
  Here are the tasks in your list:
  1.[T][ ] borrow book
- 2.[D][ ] return book (by: no idea :-p)
+ 2.[D][ ] return book (by: Oct 15 2019)
  3.[E][ ] project meeting (from: Mon 2pm to: 4pm)
 ```
 
@@ -181,7 +181,7 @@ Expected responses:
 ```text
  Here are the tasks in your list:
  1.[T][ ] borrow book
- 2.[D][ ] return book (by: no idea :-p)
+ 2.[D][ ] return book (by: Oct 15 2019)
  3.[E][ ] project meeting (from: Mon 2pm to: 4pm)
 ```
 
@@ -223,7 +223,7 @@ Expected responses:
 ```text
  Here are the tasks in your list:
  1.[T][ ] borrow book
- 2.[D][ ] return book (by: no idea :-p)
+ 2.[D][ ] return book (by: Oct 15 2019)
  3.[E][ ] project meeting (from: Mon 2pm to: 4pm)
 ```
 
@@ -281,7 +281,7 @@ Expected responses:
 ```text
  Here are the tasks in your list:
  1.[T][X] borrow book
- 2.[D][ ] return book (by: no idea :-p)
+ 2.[D][ ] return book (by: Oct 15 2019)
  3.[E][X] project meeting (from: Mon 2pm to: 4pm)
 ```
 
@@ -344,7 +344,7 @@ Expected responses:
 ```text
  Here are the tasks in your list:
  1.[T][ ] borrow book
- 2.[D][ ] return book (by: no idea :-p)
+ 2.[D][ ] return book (by: Oct 15 2019)
  3.[E][ ] project meeting (from: Mon 2pm to: 4pm)
 ```
 
@@ -364,7 +364,7 @@ Expected responses:
 
 ```text
  Ahh noted! I've removed this task:
-   [D][ ] return book (by: no idea :-p)
+   [D][ ] return book (by: Oct 15 2019)
  Now you have 2 tasks in the list.
 ```
 
@@ -719,7 +719,7 @@ delete 1
 list
 todo revived
 mark 1
-deadline persist deadline /by Friday
+deadline persist deadline /by 2024-02-29
 event persist event /from noon /to evening
 mark 3
 list
@@ -794,7 +794,7 @@ Expected responses:
 
 ```text
  Got it! I've added this task:
-   [D][ ] persist deadline (by: Friday)
+   [D][ ] persist deadline (by: Feb 29 2024)
  Now you have 2 tasks in the list :)
 ```
 
@@ -812,7 +812,7 @@ Expected responses:
 ```text
  Here are the tasks in your list:
  1.[T][X] revived
- 2.[D][ ] persist deadline (by: Friday)
+ 2.[D][ ] persist deadline (by: Feb 29 2024)
  3.[E][X] persist event (from: noon to: evening)
 ```
 
@@ -853,7 +853,7 @@ Expected responses:
 ```text
  Here are the tasks in your list:
  1.[T][X] revived
- 2.[D][ ] persist deadline (by: Friday)
+ 2.[D][ ] persist deadline (by: Feb 29 2024)
  3.[E][X] persist event (from: noon to: evening)
 ```
 
@@ -864,7 +864,7 @@ Expected responses:
 
 ```text
  Ahh noted! I've removed this task:
-   [D][ ] persist deadline (by: Friday)
+   [D][ ] persist deadline (by: Feb 29 2024)
  Now you have 2 tasks in the list.
 ```
 
@@ -1088,3 +1088,267 @@ Expected responses:
 ```text
 Byebye hope to see you again soon!
 ```
+
+## Test Case 26: Validate calendar dates and display formatting
+
+Starts a new process in the same isolated working directory, retaining
+the file from Test Case 25, unless a fixture below replaces it.
+Compare the standard greeting before command input.
+
+Input:
+
+```text
+deadline return book /by 2019-10-15
+deadline rejected /by 2023-02-29
+list
+deadline rejected /by 2026-04-31
+list
+deadline rejected /by 2026-13-01
+list
+deadline rejected /by 2026-01-00
+list
+deadline rejected /by 2019-2-01
+list
+deadline rejected /by 15/10/2019
+list
+deadline rejected /by Friday
+list
+deadline rejected /by 2019-10-15 1800
+list
+deadline leap day /by   2024-02-29<three spaces>
+list
+bye
+```
+
+Expected responses:
+
+```text
+ Got it! I've added this task:
+   [D][ ] return book (by: Oct 15 2019)
+ Now you have 1 tasks in the list :)
+```
+
+```text
+ WAIT PAUSE!! Use a valid deadline date in yyyy-MM-dd format (e.g., 2019-10-15).
+```
+
+```text
+ Here are the tasks in your list:
+ 1.[D][ ] return book (by: Oct 15 2019)
+```
+
+```text
+ WAIT PAUSE!! Use a valid deadline date in yyyy-MM-dd format (e.g., 2019-10-15).
+```
+
+```text
+ Here are the tasks in your list:
+ 1.[D][ ] return book (by: Oct 15 2019)
+```
+
+```text
+ WAIT PAUSE!! Use a valid deadline date in yyyy-MM-dd format (e.g., 2019-10-15).
+```
+
+```text
+ Here are the tasks in your list:
+ 1.[D][ ] return book (by: Oct 15 2019)
+```
+
+```text
+ WAIT PAUSE!! Use a valid deadline date in yyyy-MM-dd format (e.g., 2019-10-15).
+```
+
+```text
+ Here are the tasks in your list:
+ 1.[D][ ] return book (by: Oct 15 2019)
+```
+
+```text
+ WAIT PAUSE!! Use a valid deadline date in yyyy-MM-dd format (e.g., 2019-10-15).
+```
+
+```text
+ Here are the tasks in your list:
+ 1.[D][ ] return book (by: Oct 15 2019)
+```
+
+```text
+ WAIT PAUSE!! Use a valid deadline date in yyyy-MM-dd format (e.g., 2019-10-15).
+```
+
+```text
+ Here are the tasks in your list:
+ 1.[D][ ] return book (by: Oct 15 2019)
+```
+
+```text
+ WAIT PAUSE!! Use a valid deadline date in yyyy-MM-dd format (e.g., 2019-10-15).
+```
+
+```text
+ Here are the tasks in your list:
+ 1.[D][ ] return book (by: Oct 15 2019)
+```
+
+```text
+ WAIT PAUSE!! Use a valid deadline date in yyyy-MM-dd format (e.g., 2019-10-15).
+```
+
+```text
+ Here are the tasks in your list:
+ 1.[D][ ] return book (by: Oct 15 2019)
+```
+
+```text
+ Got it! I've added this task:
+   [D][ ] leap day (by: Feb 29 2024)
+ Now you have 2 tasks in the list :)
+```
+
+```text
+ Here are the tasks in your list:
+ 1.[D][ ] return book (by: Oct 15 2019)
+ 2.[D][ ] leap day (by: Feb 29 2024)
+```
+
+```text
+Byebye hope to see you again soon!
+```
+
+## Test Case 27: Reload dates and mark a leap-day deadline
+
+Starts a new process in the same isolated working directory, retaining
+the file from Test Case 26, unless a fixture below replaces it.
+Compare the standard greeting before command input.
+
+Input:
+
+```text
+list
+mark 2
+bye
+```
+
+Expected responses:
+
+```text
+ Here are the tasks in your list:
+ 1.[D][ ] return book (by: Oct 15 2019)
+ 2.[D][ ] leap day (by: Feb 29 2024)
+```
+
+```text
+ WELL DONE!! I've marked this task as done:
+   [D][X] leap day (by: Feb 29 2024)
+```
+
+```text
+Byebye hope to see you again soon!
+```
+
+## Test Case 28: Reload the completed deadline
+
+Starts a new process in the same isolated working directory, retaining
+the file from Test Case 27, unless a fixture below replaces it.
+Compare the standard greeting before command input.
+
+Input:
+
+```text
+list
+bye
+```
+
+Expected responses:
+
+```text
+ Here are the tasks in your list:
+ 1.[D][ ] return book (by: Oct 15 2019)
+ 2.[D][X] leap day (by: Feb 29 2024)
+```
+
+```text
+Byebye hope to see you again soon!
+```
+
+## Test Case 29: Handle old or invalid saved dates without losing the original file
+
+Starts a new process in the same isolated working directory, retaining
+the file from Test Case 28, unless a fixture below replaces it.
+Compare the standard greeting before command input.
+
+Saved file before startup:
+
+```text
+T | 0 | before
+D | 1 | valid saved date | 2024-02-29
+D | 0 | legacy date | Friday
+D | 0 | impossible date | 2023-02-29
+E | 0 | after | noon | evening
+```
+
+Startup notice (after the greeting separator):
+
+```text
+Some saved deadlines have invalid dates and were not loaded. Original file will be backed up in data/samsquare-legacy-dates-*.txt before saving.
+```
+
+Verify legacy backup after session: exactly one backup must equal the fixture byte for byte.
+
+Input:
+
+```text
+list
+todo keep
+bye
+```
+
+Expected responses:
+
+```text
+ Here are the tasks in your list:
+ 1.[T][ ] before
+ 2.[D][X] valid saved date (by: Feb 29 2024)
+ 3.[E][ ] after (from: noon to: evening)
+```
+
+```text
+ Got it!! I've added this task:
+   [T][ ] keep
+ Now you have 4 tasks in the list :)
+```
+
+```text
+Byebye hope to see you again soon!
+```
+
+## Test Case 30: Reload the repaired task file without another warning
+
+Starts a new process in the same isolated working directory, retaining
+the file from Test Case 29, unless a fixture below replaces it.
+Compare the standard greeting before command input.
+
+Input:
+
+```text
+list
+bye
+```
+
+Expected responses:
+
+```text
+ Here are the tasks in your list:
+ 1.[T][ ] before
+ 2.[D][X] valid saved date (by: Feb 29 2024)
+ 3.[E][ ] after (from: noon to: evening)
+ 4.[T][ ] keep
+```
+
+```text
+Byebye hope to see you again soon!
+```
+
+The runner also verifies that every saved deadline date uses ISO format and
+that all expected output matches under a non-English default Java locale.

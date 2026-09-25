@@ -1,5 +1,8 @@
 package parser;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+
 import commands.AddCommand;
 import commands.Command;
 import commands.DeleteCommand;
@@ -168,7 +171,11 @@ public class Parser {
             );
         }
 
-        return new Deadline(description, by);
+        try {
+            return new Deadline(description, LocalDate.parse(by.trim()));
+        } catch (DateTimeParseException e) {
+            throw new SamSquareException("Use a valid deadline date in yyyy-MM-dd format (e.g., 2019-10-15).");
+        }
     }
 
     /**

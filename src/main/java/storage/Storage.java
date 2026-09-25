@@ -6,6 +6,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +23,9 @@ import tasks.Todo;
 public class Storage {
     private static final Path FILE_PATH = Paths.get("data", "samsquare.txt");
 
+    /** Whether unparseable saved deadlines require a backup before the next write. */
+    private static boolean needsDateBackup;
+
     /**
      * Saves tasks in their current order, reporting file errors to the console.
      *
@@ -28,6 +34,13 @@ public class Storage {
     public static void save(List<Task> tasks) {
         try {
             Files.createDirectories(FILE_PATH.getParent());
+
+            if (needsDateBackup) {
+                // A unique backup avoids overwriting an earlier migration backup.
+                Path backup = Files.createTempFile(FILE_PATH.getParent(), "samsquare-legacy-dates-", ".txt");
+                Files.copy(FILE_PATH, backup, StandardCopyOption.REPLACE_EXISTING);
+                needsDateBackup = false;
+            }
 
             BufferedWriter writer = Files.newBufferedWriter(FILE_PATH);
 
@@ -69,6 +82,7 @@ public class Storage {
      * @return Tasks read successfully, or an empty list if the file does not exist.
      */
     public static List<Task> load() {
+        needsDateBackup = false;
         List<Task> tasks = new ArrayList<>();
         if (!Files.exists(FILE_PATH)) {
             return tasks;
@@ -109,7 +123,7 @@ public class Storage {
                             continue;
                         }
 
-                        loadedTask = new Deadline(parts[2], parts[3]);
+                        loadedTask = new Deadline(parts[2], LocalDate.parse(parts[3]));
 
                     } else if (type.equals("E")) {
 
@@ -135,12 +149,19 @@ public class Storage {
 
                     tasks.add(loadedTask);
 
+                } catch (DateTimeParseException e) {
+                    needsDateBackup = true;
                 } catch (ArrayIndexOutOfBoundsException e) {
                     // this is to ignore malformed line and continue loading
                 }
             }
 
             reader.close();
+
+            if (needsDateBackup) {
+                System.out.println("Some saved deadlines have invalid dates and were not loaded. "
+                        + "Original file will be backed up in data/samsquare-legacy-dates-*.txt before saving.");
+            }
 
         } catch (IOException e) {
             System.out.println("Error loading tasks.");
