@@ -28,6 +28,8 @@ public class Storage {
 
     /**
      * Saves tasks in their current order, reporting file errors to the console.
+     * When loading skipped unparseable deadline dates, first preserves the original
+     * file in a unique backup. A backup failure aborts the save.
      *
      * @param tasks Tasks to save, including their completion status.
      */
@@ -78,6 +80,8 @@ public class Storage {
 
     /**
      * Loads saved tasks, skipping malformed lines and reporting file errors.
+     * Invalid saved deadline dates produce a notice and require a backup before
+     * the next save, allowing the user to recover older free-text deadlines.
      *
      * @return Tasks read successfully, or an empty list if the file does not exist.
      */

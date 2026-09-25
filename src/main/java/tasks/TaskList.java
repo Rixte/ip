@@ -111,6 +111,10 @@ public class TaskList {
 
     /**
      * Converts a valid displayed number to a zero-based index before any mutation.
+     *
+     * @param taskNumber One-based task number supplied by the user.
+     * @return The corresponding index into the backing list.
+     * @throws SamSquareException If the number is outside the current list.
      */
     private int getTaskIndex(int taskNumber) throws SamSquareException {
         if (taskNumber < 1 || taskNumber > tasks.size()) {
