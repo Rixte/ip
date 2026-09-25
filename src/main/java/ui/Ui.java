@@ -14,6 +14,14 @@ import tasks.Task;
 public class Ui implements AutoCloseable {
     private static final String LINE_SEPARATOR =
             "____________________________________________________________";
+    private static final String BANNER = "      __________\n"
+            + "    /            \\\n"
+            + "   /   •     •    \\\n"
+            + "  |      ᴥ         |\n"
+            + "   \\    _____     /\n"
+            + "    \\____________/\n"
+            + "      ||    ||\n"
+            + "      ||____||";
 
     private final Scanner scanner = new Scanner(System.in);
 
@@ -30,16 +38,7 @@ public class Ui implements AutoCloseable {
      * Displays the welcome banner before tasks are loaded.
      */
     public void showGreeting() {
-        String banner = "      __________\n"
-                + "    /            \\\n"
-                + "   /   •     •    \\\n"
-                + "  |      ᴥ         |\n"
-                + "   \\    _____     /\n"
-                + "    \\____________/\n"
-                + "      ||    ||\n"
-                + "      ||____||";
-
-        System.out.println(banner);
+        System.out.println(BANNER);
         System.out.println("HELLO!! I am SamSquare :D\n"
                 + "What can I do for you?");
         showLine();

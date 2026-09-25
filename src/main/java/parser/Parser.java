@@ -22,6 +22,17 @@ import tasks.Todo;
  * Interprets one console command without changing the task list or performing I/O.
  */
 public class Parser {
+    private static final String TODO_COMMAND = "todo";
+    private static final String DEADLINE_COMMAND = "deadline";
+    private static final String EVENT_COMMAND = "event";
+    private static final String MARK_COMMAND = "mark";
+    private static final String UNMARK_COMMAND = "unmark";
+    private static final String DELETE_COMMAND = "delete";
+    private static final String FIND_COMMAND = "find";
+    private static final String ON_COMMAND = "on";
+    private static final String LIST_COMMAND = "list";
+    private static final String BYE_COMMAND = "bye";
+
     private final String fullCommand;
     private final String command;
 
@@ -43,8 +54,9 @@ public class Parser {
 
         // No-argument commands still reject additional words after normalization.
         boolean isKnownCommand = switch (command) {
-            case "todo", "deadline", "event", "mark", "unmark", "delete", "find", "on" -> true;
-            case "list", "bye" -> this.fullCommand.equals(command);
+            case TODO_COMMAND, DEADLINE_COMMAND, EVENT_COMMAND, MARK_COMMAND,
+                    UNMARK_COMMAND, DELETE_COMMAND, FIND_COMMAND, ON_COMMAND -> true;
+            case LIST_COMMAND, BYE_COMMAND -> this.fullCommand.equals(command);
             default -> false;
         };
         if (!isKnownCommand) {
@@ -65,14 +77,14 @@ public class Parser {
      */
     public Command parseCommand() throws SamSquareException {
         return switch (command) {
-            case "list" -> new ListCommand();
-            case "bye" -> new ExitCommand();
-            case "todo", "deadline", "event" -> new AddCommand(parseTask());
-            case "delete" -> new DeleteCommand(parseTaskNumber());
-            case "mark" -> new MarkCommand(parseTaskNumber());
-            case "unmark" -> new UnmarkCommand(parseTaskNumber());
-            case "find" -> parseFind();
-            case "on" -> parseOn();
+            case LIST_COMMAND -> new ListCommand();
+            case BYE_COMMAND -> new ExitCommand();
+            case TODO_COMMAND, DEADLINE_COMMAND, EVENT_COMMAND -> new AddCommand(parseTask());
+            case DELETE_COMMAND -> new DeleteCommand(parseTaskNumber());
+            case MARK_COMMAND -> new MarkCommand(parseTaskNumber());
+            case UNMARK_COMMAND -> new UnmarkCommand(parseTaskNumber());
+            case FIND_COMMAND -> parseFind();
+            case ON_COMMAND -> parseOn();
             default -> throw new IllegalStateException("Parser contains an unsupported command.");
         };
     }
@@ -86,9 +98,9 @@ public class Parser {
      */
     private Task parseTask() throws SamSquareException {
         return switch (command) {
-            case "todo" -> parseTodo();
-            case "deadline" -> parseDeadline();
-            case "event" -> parseEvent();
+            case TODO_COMMAND -> parseTodo();
+            case DEADLINE_COMMAND -> parseDeadline();
+            case EVENT_COMMAND -> parseEvent();
             default -> throw new IllegalStateException("This command does not add a task.");
         };
     }
@@ -102,7 +114,7 @@ public class Parser {
      * @throws IllegalStateException If this command does not use a task number.
      */
     private int parseTaskNumber() throws SamSquareException {
-        if (!command.equals("mark") && !command.equals("unmark") && !command.equals("delete")) {
+        if (!command.equals(MARK_COMMAND) && !command.equals(UNMARK_COMMAND) && !command.equals(DELETE_COMMAND)) {
             throw new IllegalStateException("This command does not use a task number.");
         }
 
@@ -114,7 +126,7 @@ public class Parser {
         try {
             return Integer.parseInt(numberText);
         } catch (NumberFormatException e) {
-            String message = command.equals("delete")
+            String message = command.equals(DELETE_COMMAND)
                     ? "HEY!! The task number must be a valid number!"
                     : "The task number must be a valid number.";
             throw new SamSquareException(message);
