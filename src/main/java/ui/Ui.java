@@ -1,5 +1,6 @@
 package ui;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Scanner;
 
@@ -60,6 +61,16 @@ public class Ui implements AutoCloseable {
      */
     public void showMatchingTasks(List<Task> tasks) {
         showTaskList(tasks, " Here are the matching tasks in your list:");
+    }
+
+    /**
+     * Displays deadlines for a date, numbering the results from one.
+     *
+     * @param tasks Matching deadlines in their original order.
+     * @param date Calendar date used for the search heading.
+     */
+    public void showDeadlinesOn(List<Task> tasks, LocalDate date) {
+        showTaskList(tasks, " Here are the deadlines on " + date + ":");
     }
 
     /**

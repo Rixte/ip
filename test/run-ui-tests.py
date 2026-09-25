@@ -88,6 +88,7 @@ with tempfile.TemporaryDirectory(prefix='samsquare-ui-') as work:
                 assert process is None or process.poll() == 0
                 task_file.parent.mkdir(exist_ok=True)
                 task_file.write_bytes(fixture.group(1).encode('utf-8'))
+            saved_before = task_file.read_bytes() if task_file.exists() else None
             if index == 0 or 'Starts a new process' in case:
                 assert process is None or process.poll() == 0, 'Prior session did not exit successfully'
                 start(work, case)
@@ -120,6 +121,10 @@ with tempfile.TemporaryDirectory(prefix='samsquare-ui-') as work:
                 assert len(backups) == 1, 'Expected exactly one legacy date backup'
                 assert backups[0].read_bytes() == fixture.group(1).encode('utf-8'), 'Backup differs from original'
                 transcript.append('PASS: Original legacy task file backed up byte for byte.\n')
+            if 'Verify task file unchanged after session:' in case:
+                saved_after = task_file.read_bytes() if task_file.exists() else None
+                assert saved_after == saved_before, 'Read-only commands changed the saved task file'
+                transcript.append('PASS: Read-only commands left the saved task file unchanged.\n')
             print('PASS ' + title)
         assert process.poll() == 0
         transcript.append(f'PASS: {len(cases)} cases, {count} commands.\n')

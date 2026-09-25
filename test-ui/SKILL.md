@@ -68,6 +68,7 @@ The tests should cover the actual console behaviour of SamSquare, including:
 * unmarking tasks;
 * accepting valid ISO deadline dates and displaying English month names;
 * rejecting invalid deadline dates without changing state;
+* filtering deadlines by date, including completed tasks and excluding other task types;
 * preserving arbitrary event time strings;
 * handling multiple task types together;
 * exiting with `bye`.

@@ -2,7 +2,7 @@
 
 This plan tests SamSquare through its actual console interface. Run the cases in
 order. Test Case 1 starts with an empty task list. Cases 2–17 continue in
-the same process; Cases 18–35 explicitly restart the process with the saved
+the same process; Cases 18–39 explicitly restart the process with the saved
 state or replacement fixture specified in each case. Stop at the first failure.
 Every `bye`, including one surrounded by spaces, must terminate its process
 after the response separator.
@@ -419,7 +419,7 @@ Expected responses:
 ```
 
 ```text
- WAIT PAUSE!! Hold up... I don't recognise that command. Please use todo, deadline, event, mark, unmark, delete, find, list or bye.
+ WAIT PAUSE!! Hold up... I don't recognise that command. Please use todo, deadline, event, mark, unmark, delete, find, on, list or bye.
 ```
 
 ```text
@@ -583,7 +583,7 @@ list
 Expected responses:
 
 ```text
- WAIT PAUSE!! Hold up... I don't recognise that command. Please use todo, deadline, event, mark, unmark, delete, find, list or bye.
+ WAIT PAUSE!! Hold up... I don't recognise that command. Please use todo, deadline, event, mark, unmark, delete, find, on, list or bye.
 ```
 
 ```text
@@ -593,7 +593,7 @@ Expected responses:
 ```
 
 ```text
- WAIT PAUSE!! Hold up... I don't recognise that command. Please use todo, deadline, event, mark, unmark, delete, find, list or bye.
+ WAIT PAUSE!! Hold up... I don't recognise that command. Please use todo, deadline, event, mark, unmark, delete, find, on, list or bye.
 ```
 
 ```text
@@ -603,19 +603,7 @@ Expected responses:
 ```
 
 ```text
- WAIT PAUSE!! Hold up... I don't recognise that command. Please use todo, deadline, event, mark, unmark, delete, find, list or bye.
-```
-
-```text
- Here are the tasks in your list:
- 1.[E][ ] project meeting (from: Mon 2pm to: 4pm)
- 2.[T][ ] buy groceries
-```
-
-```text
- Here are the tasks in your list:
- 1.[E][ ] project meeting (from: Mon 2pm to: 4pm)
- 2.[T][ ] buy groceries
+ WAIT PAUSE!! Hold up... I don't recognise that command. Please use todo, deadline, event, mark, unmark, delete, find, on, list or bye.
 ```
 
 ```text
@@ -637,7 +625,19 @@ Expected responses:
 ```
 
 ```text
- WAIT PAUSE!! Hold up... I don't recognise that command. Please use todo, deadline, event, mark, unmark, delete, find, list or bye.
+ Here are the tasks in your list:
+ 1.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+ 2.[T][ ] buy groceries
+```
+
+```text
+ Here are the tasks in your list:
+ 1.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+ 2.[T][ ] buy groceries
+```
+
+```text
+ WAIT PAUSE!! Hold up... I don't recognise that command. Please use todo, deadline, event, mark, unmark, delete, find, on, list or bye.
 ```
 
 ```text
@@ -1706,7 +1706,7 @@ Expected responses:
 ```
 
 ```text
- WAIT PAUSE!! Hold up... I don't recognise that command. Please use todo, deadline, event, mark, unmark, delete, find, list or bye.
+ WAIT PAUSE!! Hold up... I don't recognise that command. Please use todo, deadline, event, mark, unmark, delete, find, on, list or bye.
 ```
 
 ```text
@@ -1743,6 +1743,383 @@ Expected responses:
 ```text
  Here are the matching tasks in your list:
  1.[D][ ] return book (by: Oct 15 2019)
+```
+
+```text
+Byebye hope to see you again soon!
+```
+
+## Test Case 36: Validate date searches on an empty list
+
+Starts a new process after Case 35 using the empty saved file below.
+Compare the standard greeting. Every rejected search must leave the list empty.
+
+Saved file before startup:
+
+```text
+```
+
+Verify task file unchanged after session: searches must not change the empty file.
+
+Input:
+
+```text
+on 2024-02-29
+on
+list
+<three spaces>on<three spaces>
+list
+on Friday
+list
+on 2023-02-29
+list
+on 2024-13-01
+list
+on 2024-04-31
+list
+on 2024-01-00
+list
+on 29/02/2024
+list
+on 2024-2-29
+list
+on 2024-02-29 1800
+list
+on 2024-02-29 extra
+list
+only 2024-02-29
+list
+bye
+```
+
+Expected responses:
+
+```text
+ Here are the deadlines on 2024-02-29:
+```
+
+```text
+ WAIT PAUSE!! Please specify a date: on yyyy-MM-dd.
+```
+
+```text
+ Here are the tasks in your list:
+```
+
+```text
+ WAIT PAUSE!! Please specify a date: on yyyy-MM-dd.
+```
+
+```text
+ Here are the tasks in your list:
+```
+
+```text
+ WAIT PAUSE!! Use a valid date in yyyy-MM-dd format (e.g., 2019-10-15).
+```
+
+```text
+ Here are the tasks in your list:
+```
+
+```text
+ WAIT PAUSE!! Use a valid date in yyyy-MM-dd format (e.g., 2019-10-15).
+```
+
+```text
+ Here are the tasks in your list:
+```
+
+```text
+ WAIT PAUSE!! Use a valid date in yyyy-MM-dd format (e.g., 2019-10-15).
+```
+
+```text
+ Here are the tasks in your list:
+```
+
+```text
+ WAIT PAUSE!! Use a valid date in yyyy-MM-dd format (e.g., 2019-10-15).
+```
+
+```text
+ Here are the tasks in your list:
+```
+
+```text
+ WAIT PAUSE!! Use a valid date in yyyy-MM-dd format (e.g., 2019-10-15).
+```
+
+```text
+ Here are the tasks in your list:
+```
+
+```text
+ WAIT PAUSE!! Use a valid date in yyyy-MM-dd format (e.g., 2019-10-15).
+```
+
+```text
+ Here are the tasks in your list:
+```
+
+```text
+ WAIT PAUSE!! Use a valid date in yyyy-MM-dd format (e.g., 2019-10-15).
+```
+
+```text
+ Here are the tasks in your list:
+```
+
+```text
+ WAIT PAUSE!! Use a valid date in yyyy-MM-dd format (e.g., 2019-10-15).
+```
+
+```text
+ Here are the tasks in your list:
+```
+
+```text
+ WAIT PAUSE!! Use a valid date in yyyy-MM-dd format (e.g., 2019-10-15).
+```
+
+```text
+ Here are the tasks in your list:
+```
+
+```text
+ WAIT PAUSE!! Hold up... I don't recognise that command. Please use todo, deadline, event, mark, unmark, delete, find, on, list or bye.
+```
+
+```text
+ Here are the tasks in your list:
+```
+
+```text
+Byebye hope to see you again soon!
+```
+
+## Test Case 37: Match exact due dates in a mixed saved list without saving
+
+Starts a new process after Case 36 with the fixture below. Compare the standard greeting.
+The blank line in the fixture must survive: an unintended save would remove it.
+The date-looking ToDo and event must not match. Both completed and incomplete
+deadlines must match in their original order, with independent result numbering.
+
+Saved file before startup:
+
+```text
+T | 0 | note 2024-02-29
+
+D | 0 | before leap | 2024-02-28
+D | 1 | first leap | 2024-02-29
+E | 0 | date event | 2024-02-29 | 2024-02-29
+D | 0 | second leap | 2024-02-29
+D | 0 | after leap | 2024-03-01
+D | 0 | other year | 2020-02-29
+D | 0 | other month | 2024-03-29
+```
+
+Verify task file unchanged after session: preserve the entire fixture byte for byte.
+
+Input:
+
+```text
+on 2024-02-29
+<three spaces>on   2024-02-29<three spaces>
+on 2020-02-29
+on 2024-03-29
+on 2030-01-01
+<three spaces>on 2023-02-29<three spaces>
+list
+on
+list
+bye
+```
+
+Expected responses:
+
+```text
+ Here are the deadlines on 2024-02-29:
+ 1.[D][X] first leap (by: Feb 29 2024)
+ 2.[D][ ] second leap (by: Feb 29 2024)
+```
+
+```text
+ Here are the deadlines on 2024-02-29:
+ 1.[D][X] first leap (by: Feb 29 2024)
+ 2.[D][ ] second leap (by: Feb 29 2024)
+```
+
+```text
+ Here are the deadlines on 2020-02-29:
+ 1.[D][ ] other year (by: Feb 29 2020)
+```
+
+```text
+ Here are the deadlines on 2024-03-29:
+ 1.[D][ ] other month (by: Mar 29 2024)
+```
+
+```text
+ Here are the deadlines on 2030-01-01:
+```
+
+```text
+ WAIT PAUSE!! Use a valid date in yyyy-MM-dd format (e.g., 2019-10-15).
+```
+
+```text
+ Here are the tasks in your list:
+ 1.[T][ ] note 2024-02-29
+ 2.[D][ ] before leap (by: Feb 28 2024)
+ 3.[D][X] first leap (by: Feb 29 2024)
+ 4.[E][ ] date event (from: 2024-02-29 to: 2024-02-29)
+ 5.[D][ ] second leap (by: Feb 29 2024)
+ 6.[D][ ] after leap (by: Mar 01 2024)
+ 7.[D][ ] other year (by: Feb 29 2020)
+ 8.[D][ ] other month (by: Mar 29 2024)
+```
+
+```text
+ WAIT PAUSE!! Please specify a date: on yyyy-MM-dd.
+```
+
+```text
+ Here are the tasks in your list:
+ 1.[T][ ] note 2024-02-29
+ 2.[D][ ] before leap (by: Feb 28 2024)
+ 3.[D][X] first leap (by: Feb 29 2024)
+ 4.[E][ ] date event (from: 2024-02-29 to: 2024-02-29)
+ 5.[D][ ] second leap (by: Feb 29 2024)
+ 6.[D][ ] after leap (by: Mar 01 2024)
+ 7.[D][ ] other year (by: Feb 29 2020)
+ 8.[D][ ] other month (by: Mar 29 2024)
+```
+
+```text
+Byebye hope to see you again soon!
+```
+
+## Test Case 38: Refresh date results after deletion and completion changes
+
+Starts a new process in the same isolated working directory, retaining the
+fixture from Case 37. Compare the standard greeting. Mutation commands use
+full-list numbers, not the numbers displayed by `on`.
+
+Input:
+
+```text
+on 2024-02-29
+delete 3
+on 2024-02-29
+mark 4
+on 2024-02-29
+list
+bye
+```
+
+Expected responses:
+
+```text
+ Here are the deadlines on 2024-02-29:
+ 1.[D][X] first leap (by: Feb 29 2024)
+ 2.[D][ ] second leap (by: Feb 29 2024)
+```
+
+```text
+ Ahh noted! I've removed this task:
+   [D][X] first leap (by: Feb 29 2024)
+ Now you have 7 tasks in the list.
+```
+
+```text
+ Here are the deadlines on 2024-02-29:
+ 1.[D][ ] second leap (by: Feb 29 2024)
+```
+
+```text
+ WELL DONE!! I've marked this task as done:
+   [D][X] second leap (by: Feb 29 2024)
+```
+
+```text
+ Here are the deadlines on 2024-02-29:
+ 1.[D][X] second leap (by: Feb 29 2024)
+```
+
+```text
+ Here are the tasks in your list:
+ 1.[T][ ] note 2024-02-29
+ 2.[D][ ] before leap (by: Feb 28 2024)
+ 3.[E][ ] date event (from: 2024-02-29 to: 2024-02-29)
+ 4.[D][X] second leap (by: Feb 29 2024)
+ 5.[D][ ] after leap (by: Mar 01 2024)
+ 6.[D][ ] other year (by: Feb 29 2020)
+ 7.[D][ ] other month (by: Mar 29 2024)
+```
+
+```text
+Byebye hope to see you again soon!
+```
+
+## Test Case 39: Reload filtered tasks and remove the final match
+
+Starts a new process in the same isolated working directory, retaining the
+saved list from Case 38. Compare the standard greeting.
+
+Input:
+
+```text
+on 2024-02-29
+unmark 4
+on 2024-02-29
+delete 4
+on 2024-02-29
+on 2024-03-01
+list
+bye
+```
+
+Expected responses:
+
+```text
+ Here are the deadlines on 2024-02-29:
+ 1.[D][X] second leap (by: Feb 29 2024)
+```
+
+```text
+ OK, I've marked this task as not done yet:
+   [D][ ] second leap (by: Feb 29 2024)
+```
+
+```text
+ Here are the deadlines on 2024-02-29:
+ 1.[D][ ] second leap (by: Feb 29 2024)
+```
+
+```text
+ Ahh noted! I've removed this task:
+   [D][ ] second leap (by: Feb 29 2024)
+ Now you have 6 tasks in the list.
+```
+
+```text
+ Here are the deadlines on 2024-02-29:
+```
+
+```text
+ Here are the deadlines on 2024-03-01:
+ 1.[D][ ] after leap (by: Mar 01 2024)
+```
+
+```text
+ Here are the tasks in your list:
+ 1.[T][ ] note 2024-02-29
+ 2.[D][ ] before leap (by: Feb 28 2024)
+ 3.[E][ ] date event (from: 2024-02-29 to: 2024-02-29)
+ 4.[D][ ] after leap (by: Mar 01 2024)
+ 5.[D][ ] other year (by: Feb 29 2020)
+ 6.[D][ ] other month (by: Mar 29 2024)
 ```
 
 ```text

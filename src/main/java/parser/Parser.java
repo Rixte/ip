@@ -10,6 +10,7 @@ import commands.ExitCommand;
 import commands.FindCommand;
 import commands.ListCommand;
 import commands.MarkCommand;
+import commands.OnCommand;
 import commands.UnmarkCommand;
 import exception.SamSquareException;
 import tasks.Deadline;
@@ -42,7 +43,7 @@ public class Parser {
 
         // No-argument commands still reject additional words after normalization.
         boolean isKnownCommand = switch (command) {
-            case "todo", "deadline", "event", "mark", "unmark", "delete", "find" -> true;
+            case "todo", "deadline", "event", "mark", "unmark", "delete", "find", "on" -> true;
             case "list", "bye" -> this.fullCommand.equals(command);
             default -> false;
         };
@@ -50,7 +51,7 @@ public class Parser {
             throw new SamSquareException(
                     "Hold up... I don't recognise that command. "
                             + "Please use todo, deadline, event, mark, "
-                            + "unmark, delete, find, list or bye."
+                            + "unmark, delete, find, on, list or bye."
             );
         }
     }
@@ -71,6 +72,7 @@ public class Parser {
             case "mark" -> new MarkCommand(parseTaskNumber());
             case "unmark" -> new UnmarkCommand(parseTaskNumber());
             case "find" -> parseFind();
+            case "on" -> parseOn();
             default -> throw new IllegalStateException("Parser contains an unsupported command.");
         };
     }
@@ -140,6 +142,24 @@ public class Parser {
             throw new SamSquareException("Please specify a keyword to find.");
         }
         return new FindCommand(keyword);
+    }
+
+    /**
+     * Parses a calendar date for a deadline search.
+     *
+     * @return A command that lists deadlines due on the requested date.
+     * @throws SamSquareException If the date is missing or is not a valid ISO date.
+     */
+    private Command parseOn() throws SamSquareException {
+        String dateText = getArguments();
+        if (dateText.isEmpty()) {
+            throw new SamSquareException("Please specify a date: on yyyy-MM-dd.");
+        }
+        try {
+            return new OnCommand(LocalDate.parse(dateText));
+        } catch (DateTimeParseException e) {
+            throw new SamSquareException("Use a valid date in yyyy-MM-dd format (e.g., 2019-10-15).");
+        }
     }
 
     /**

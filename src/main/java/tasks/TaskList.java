@@ -1,5 +1,6 @@
 package tasks;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -103,6 +104,23 @@ public class TaskList {
         List<Task> matches = new ArrayList<>();
         for (Task task : tasks) {
             if (task.getDescription().contains(keyword)) {
+                matches.add(task);
+            }
+        }
+        return matches;
+    }
+
+    /**
+     * Finds deadlines due on a date, including completed tasks in their original order.
+     * ToDos and events are excluded because they have no calendar due date.
+     *
+     * @param date Calendar date to match exactly.
+     * @return A separate list of matching deadline references, possibly empty.
+     */
+    public List<Task> findDeadlinesOn(LocalDate date) {
+        List<Task> matches = new ArrayList<>();
+        for (Task task : tasks) {
+            if (task instanceof Deadline deadline && deadline.getBy().equals(date)) {
                 matches.add(task);
             }
         }

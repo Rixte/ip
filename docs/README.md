@@ -87,6 +87,19 @@ Example: `find book`
 - Results are numbered separately from 1. **Run `list` before marking or deleting**
   to get the task's full-list number.
 
+### Viewing deadlines on a date: `on`
+
+Shows deadlines due on one date, including completed tasks.
+
+Format: `on DATE`
+
+Example: `on 2019-10-15`
+
+Use `yyyy-MM-dd`, just as when adding a deadline. Results stay in their original
+order; no matches means an empty result list. ToDos and events are excluded
+because event times are free text. The command does not change or save tasks.
+Results are numbered from 1: run `list` before marking, unmarking, or deleting.
+
 ### Removing a task: `delete`
 
 Removes a task permanently. There is no undo command.
