@@ -83,8 +83,10 @@ Example: `find book`
 
 - Matching is case-sensitive: `book` matches `notebook`, but not `Book`.
 - You can search a whole phrase, such as `find read book`.
+- Spaces around the search phrase are ignored; an empty search is rejected.
+- Matches include all task types and completion statuses, in their original order.
 - Dates and event times are not searched. No matches means an empty result list.
-- Results are numbered separately from 1. **Run `list` before marking or deleting**
+- Results are numbered separately from 1. **Run `list` before marking, unmarking, or deleting**
   to get the task's full-list number.
 
 ### Viewing deadlines on a date: `on`
@@ -116,7 +118,9 @@ Enter `bye` to close SamSquare.
 
 ### Saving your tasks
 
-Changes are saved automatically to `data/samsquare.txt` and loaded next time.
+Changes are saved automatically to `data/samsquare.txt` after each successful
+`todo`, `deadline`, `event`, `mark`, `unmark`, or `delete` command and loaded next time.
+Searches do not save changes, and `bye` exits without an additional save.
 Always launch from the same working directory to use the same file. Copy this
 file to keep a backup. Avoid a vertical bar (`|`) surrounded by spaces in descriptions and event times, as it can
 prevent tasks from reloading correctly.
@@ -129,3 +133,5 @@ prevent tasks from reloading correctly.
   your latest changes may not survive a restart.
 - **Old deadline dates not loaded:** re-add them using `yyyy-MM-dd`. Before the
   next save, the original file is backed up as `data/samsquare-legacy-dates-*.txt`.
+  Use this backup to recover the skipped entries. If the backup cannot be made,
+  saving is aborted and the original file is preserved.
