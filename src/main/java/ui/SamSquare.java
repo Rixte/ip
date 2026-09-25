@@ -1,11 +1,10 @@
 package ui;
 
-import java.util.ArrayList;
-
 import exception.SamSquareException;
 import parser.Parser;
 import storage.Storage;
 import tasks.Task;
+import tasks.TaskList;
 
 /**
  * Coordinates command handling, task changes, storage, and console interaction.
@@ -36,8 +35,7 @@ public class SamSquare {
      * Loads saved tasks and dispatches commands, saving successful changes.
      */
     private void runTaskManager() {
-        ArrayList<Task> tasks = new ArrayList<>();
-        Storage.load(tasks);
+        TaskList tasks = new TaskList(Storage.load());
 
         while (true) {
             try {
@@ -47,29 +45,27 @@ public class SamSquare {
                         ui.showGoodbye();
                         return;
                     }
-                    case "list" -> ui.showTasks(tasks);
+                    case "list" -> ui.showTasks(tasks.getTasks());
                     case "mark" -> {
-                        Task task = tasks.get(getTaskIndex(parser, tasks.size()));
-                        task.markAsDone();
+                        Task task = tasks.mark(parser.parseTaskNumber());
                         ui.showTaskStatus(task);
-                        Storage.save(tasks);
+                        Storage.save(tasks.getTasks());
                     }
                     case "unmark" -> {
-                        Task task = tasks.get(getTaskIndex(parser, tasks.size()));
-                        task.markAsNotDone();
+                        Task task = tasks.unmark(parser.parseTaskNumber());
                         ui.showTaskStatus(task);
-                        Storage.save(tasks);
+                        Storage.save(tasks.getTasks());
                     }
                     case "delete" -> {
-                        Task task = tasks.remove(getTaskIndex(parser, tasks.size()));
+                        Task task = tasks.delete(parser.parseTaskNumber());
                         ui.showDeletedTask(task, tasks.size());
-                        Storage.save(tasks);
+                        Storage.save(tasks.getTasks());
                     }
                     case "todo", "deadline", "event" -> {
                         Task task = parser.parseTask();
                         tasks.add(task);
                         ui.showAddedTask(task, tasks.size());
-                        Storage.save(tasks);
+                        Storage.save(tasks.getTasks());
                     }
                     default -> throw new IllegalStateException("Parser returned an unsupported command.");
                 }
@@ -77,21 +73,5 @@ public class SamSquare {
                 ui.showError(e.getMessage());
             }
         }
-    }
-
-    /**
-     * Checks whether a parsed task number exists and converts it to a list index.
-     *
-     * @param parser Parser for a command that requires a task number.
-     * @param taskCount Number of tasks currently in the list.
-     * @return The corresponding zero-based index.
-     * @throws SamSquareException If the number is invalid or outside the list.
-     */
-    private int getTaskIndex(Parser parser, int taskCount) throws SamSquareException {
-        int taskNumber = parser.parseTaskNumber();
-        if (taskNumber < 1 || taskNumber > taskCount) {
-            throw new SamSquareException("There is no task numbered " + taskNumber + ".");
-        }
-        return taskNumber - 1;
     }
 }

@@ -1,9 +1,10 @@
 # UI Test Plan
 
 This plan tests SamSquare through its actual console interface. Run the cases in
-order in one process. Test Case 1 starts with an empty task list; every later
-case continues from the state left by the preceding case. Stop at the first
-failure.
+order. Test Case 1 starts with an empty task list. Cases 2–17 continue in
+the same process; Cases 18–20 explicitly restart the process while keeping
+the isolated task file from the preceding case. Stop at the first failure.
+Every `bye` must terminate its process after the response separator.
 
 Run the process in a fresh working directory with no `data/samsquare.txt`, so
 saved personal tasks do not affect the starting state. Compile and run using
@@ -673,14 +674,249 @@ Expected responses:
  2.[T][ ] buy groceries
 ```
 
-## Test Case 16: Exit
+## Test Case 16: Empty the list and reject stale task numbers
 
-Input: `bye`
+Continues the state left by Test Case 15.
 
-Expected response:
+Input:
+
+```text
+delete 2
+list
+mark 2
+list
+delete 1
+list
+mark 1
+list
+unmark 1
+list
+delete 1
+list
+todo revived
+mark 1
+deadline persist deadline /by Friday
+event persist event /from noon /to evening
+mark 3
+list
+```
+
+Expected responses:
+
+```text
+ Ahh noted! I've removed this task:
+   [T][ ] buy groceries
+ Now you have 1 tasks in the list.
+```
+
+```text
+ Here are the tasks in your list:
+ 1.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+```
+
+```text
+ WAIT PAUSE!! There is no task numbered 2.
+```
+
+```text
+ Here are the tasks in your list:
+ 1.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+```
+
+```text
+ Ahh noted! I've removed this task:
+   [E][ ] project meeting (from: Mon 2pm to: 4pm)
+ Now you have 0 tasks in the list.
+```
+
+```text
+ Here are the tasks in your list:
+```
+
+```text
+ WAIT PAUSE!! There is no task numbered 1.
+```
+
+```text
+ Here are the tasks in your list:
+```
+
+```text
+ WAIT PAUSE!! There is no task numbered 1.
+```
+
+```text
+ Here are the tasks in your list:
+```
+
+```text
+ WAIT PAUSE!! There is no task numbered 1.
+```
+
+```text
+ Here are the tasks in your list:
+```
+
+```text
+ Got it!! I've added this task:
+   [T][ ] revived
+ Now you have 1 tasks in the list :)
+```
+
+```text
+ WELL DONE!! I've marked this task as done:
+   [T][X] revived
+```
+
+```text
+ Got it! I've added this task:
+   [D][ ] persist deadline (by: Friday)
+ Now you have 2 tasks in the list :)
+```
+
+```text
+ Got it. I've added this task:
+   [E][ ] persist event (from: noon to: evening)
+ Now you have 3 tasks in the list.
+```
+
+```text
+ WELL DONE!! I've marked this task as done:
+   [E][X] persist event (from: noon to: evening)
+```
+
+```text
+ Here are the tasks in your list:
+ 1.[T][X] revived
+ 2.[D][ ] persist deadline (by: Friday)
+ 3.[E][X] persist event (from: noon to: evening)
+```
+
+## Test Case 17: Exit with mixed saved tasks
+
+Continues the state left by Test Case 16.
+
+Input:
+
+```text
+bye
+```
+
+Expected responses:
 
 ```text
 Byebye hope to see you again soon!
 ```
 
-The process must terminate after printing the separator.
+## Test Case 18: Reload all task types and update loaded tasks
+
+Starts a new process in the same isolated working directory, retaining
+the task file from Test Case 17. Compare the greeting above
+before sending the first command.
+
+Input:
+
+```text
+list
+unmark 1
+delete 2
+list
+bye
+```
+
+Expected responses:
+
+```text
+ Here are the tasks in your list:
+ 1.[T][X] revived
+ 2.[D][ ] persist deadline (by: Friday)
+ 3.[E][X] persist event (from: noon to: evening)
+```
+
+```text
+ OK, I've marked this task as not done yet:
+   [T][ ] revived
+```
+
+```text
+ Ahh noted! I've removed this task:
+   [D][ ] persist deadline (by: Friday)
+ Now you have 2 tasks in the list.
+```
+
+```text
+ Here are the tasks in your list:
+ 1.[T][ ] revived
+ 2.[E][X] persist event (from: noon to: evening)
+```
+
+```text
+Byebye hope to see you again soon!
+```
+
+## Test Case 19: Reload updated tasks and save an empty list
+
+Starts a new process in the same isolated working directory, retaining
+the task file from Test Case 18. Compare the greeting above
+before sending the first command.
+
+Input:
+
+```text
+list
+delete 2
+delete 1
+list
+bye
+```
+
+Expected responses:
+
+```text
+ Here are the tasks in your list:
+ 1.[T][ ] revived
+ 2.[E][X] persist event (from: noon to: evening)
+```
+
+```text
+ Ahh noted! I've removed this task:
+   [E][X] persist event (from: noon to: evening)
+ Now you have 1 tasks in the list.
+```
+
+```text
+ Ahh noted! I've removed this task:
+   [T][ ] revived
+ Now you have 0 tasks in the list.
+```
+
+```text
+ Here are the tasks in your list:
+```
+
+```text
+Byebye hope to see you again soon!
+```
+
+## Test Case 20: Reload an empty saved list
+
+Starts a new process in the same isolated working directory, retaining
+the task file from Test Case 19. Compare the greeting above
+before sending the first command.
+
+Input:
+
+```text
+list
+bye
+```
+
+Expected responses:
+
+```text
+ Here are the tasks in your list:
+```
+
+```text
+Byebye hope to see you again soon!
+```

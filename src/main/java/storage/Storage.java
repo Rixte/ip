@@ -1,23 +1,31 @@
 package storage;
 
-import tasks.Deadline;
-import tasks.Event;
-import tasks.Task;
-import tasks.Todo;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
 import java.util.ArrayList;
+import java.util.List;
 
+import tasks.Deadline;
+import tasks.Event;
+import tasks.Task;
+import tasks.Todo;
+
+/**
+ * Loads and saves tasks using the application's existing text file format.
+ */
 public class Storage {
     private static final Path FILE_PATH = Paths.get("data", "samsquare.txt");
 
-    public static void save(ArrayList<Task> tasks) {
+    /**
+     * Saves tasks in their current order, reporting file errors to the console.
+     *
+     * @param tasks Tasks to save, including their completion status.
+     */
+    public static void save(List<Task> tasks) {
         try {
             Files.createDirectories(FILE_PATH.getParent());
 
@@ -55,9 +63,15 @@ public class Storage {
         }
     }
 
-    public static void load(ArrayList<Task> tasks) {
+    /**
+     * Loads saved tasks, skipping malformed lines and reporting file errors.
+     *
+     * @return Tasks read successfully, or an empty list if the file does not exist.
+     */
+    public static List<Task> load() {
+        List<Task> tasks = new ArrayList<>();
         if (!Files.exists(FILE_PATH)) {
-            return;
+            return tasks;
         }
 
         try {
@@ -131,5 +145,6 @@ public class Storage {
         } catch (IOException e) {
             System.out.println("Error loading tasks.");
         }
+        return tasks;
     }
 }

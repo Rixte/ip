@@ -96,6 +96,12 @@ Before running a session:
    starting state and every preceding accepted command.
 4. Check that the test sequence can expose state corruption rather than merely
    printing an error message.
+5. The earlier sessions never restarted the application, so they could not
+   detect lost saved tasks or completion status. When changing task ownership
+   or storage integration, restart using the same isolated task file and
+   compare all task types, order, and status. Modify loaded tasks and reload
+   again, including after deleting the final task. Check invalid task numbers
+   on an empty list and numbers made invalid by a prior deletion.
 
 ## Optional Mutation Check
 
