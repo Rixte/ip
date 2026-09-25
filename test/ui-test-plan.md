@@ -570,9 +570,33 @@ bye extra
 list
  list
 list
+list<one trailing space>
+list
+bye<one trailing space>
+list
 ```
 
 Expected responses:
+
+```text
+ WAIT PAUSE!! Hold up... I don't recognise that command. Please use todo, deadline, event, mark, unmark, list or bye.
+```
+
+```text
+ Here are the tasks in your list:
+ 1.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+ 2.[T][ ] buy groceries
+```
+
+```text
+ WAIT PAUSE!! Hold up... I don't recognise that command. Please use todo, deadline, event, mark, unmark, list or bye.
+```
+
+```text
+ Here are the tasks in your list:
+ 1.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+ 2.[T][ ] buy groceries
+```
 
 ```text
  WAIT PAUSE!! Hold up... I don't recognise that command. Please use todo, deadline, event, mark, unmark, list or bye.

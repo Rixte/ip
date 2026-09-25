@@ -1,5 +1,8 @@
 package parser;
 
+import commands.Command;
+import commands.ExitCommand;
+import commands.ListCommand;
 import exception.SamSquareException;
 import tasks.Deadline;
 import tasks.Event;
@@ -50,6 +53,21 @@ public class Parser {
      */
     public String getCommand() {
         return command;
+    }
+
+    /**
+     * Creates an executable list or exit command.
+     * Task-changing commands remain dispatched by the application during extraction.
+     *
+     * @return The executable command for list or bye.
+     * @throws IllegalStateException If this command has not been extracted yet.
+     */
+    public Command parseCommand() {
+        return switch (command) {
+            case "list" -> new ListCommand();
+            case "bye" -> new ExitCommand();
+            default -> throw new IllegalStateException("This command has not been extracted yet.");
+        };
     }
 
     /**

@@ -1,5 +1,6 @@
 package ui;
 
+import commands.Command;
 import exception.SamSquareException;
 import parser.Parser;
 import storage.Storage;
@@ -41,11 +42,13 @@ public class SamSquare {
             try {
                 Parser parser = new Parser(ui.readCommand());
                 switch (parser.getCommand()) {
-                    case "bye" -> {
-                        ui.showGoodbye();
-                        return;
+                    case "list", "bye" -> {
+                        Command command = parser.parseCommand();
+                        command.execute(tasks, ui);
+                        if (command.isExit()) {
+                            return;
+                        }
                     }
-                    case "list" -> ui.showTasks(tasks.getTasks());
                     case "mark" -> {
                         Task task = tasks.mark(parser.parseTaskNumber());
                         ui.showTaskStatus(task);
