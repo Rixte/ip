@@ -22,6 +22,15 @@ Unless the user says otherwise, assume that you are assisting a student working 
   * Make generated code as self-explanatory as possible, and include explanatory comments where they improve understanding.
   * When faced with a design choice, choose the simplest option that is sufficient for the requirements, while briefly explaining relevant more advanced alternatives.
 
+## Using reference documents
+
+A previous User Guide revision copied a friend's section order and examples
+too closely. When a reference is supplied for quality guidance, create an
+independent outline and example scenario unless the user requests its layout.
+Before presenting the revision, compare the two outlines and ensure the
+section sequence and walkthrough examples are distinct. Verify feature claims
+against SamSquare rather than transferring the reference application's rules.
+
 ## Coding standards
 
 All Java code in this repository must follow the project-specific
