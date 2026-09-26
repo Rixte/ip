@@ -120,6 +120,15 @@ Before running a session:
    original padded input unchanged and check termination for padded `bye` too.
    Cover leading-only, trailing-only, and combined padding, plus preserved
    internal description spaces and rejected extra arguments.
+9. A previous audit passed source tests while an older packaged JAR lacked
+   features in the User Guide. When checking a completed JAR or documenting a
+   release, test that exact artifact using the runner's `--jar` option, record
+   its path and hash, and do not rebuild it before testing. Locate the newly
+   created artifact rather than assuming the previous output directory.
+10. A previous JAR smoke check sent all commands before inspecting responses.
+    Use the same per-command comparisons for JAR tests as for source tests:
+    compare each response before sending the next command, and stop at the
+    first mismatch. Do not pipe an entire session into the app unchecked.
 
 ## Repeatable Runner
 
@@ -129,6 +138,10 @@ failure. It uses an isolated temporary data directory and writes the transcript
 to `_temp/<session-name>/console-record.txt`. Keep the runner in version control:
 earlier verification scripts were only in ignored `_temp`, preventing a fresh
 checkout from reproducing the same automatic comparisons.
+
+To test an existing JAR, append `--jar <path-to-jar>` to the runner command.
+This copies the JAR into the isolated directory and uses `java -jar ip.jar`
+without compiling or changing the original artifact.
 
 ## Optional Mutation Check
 

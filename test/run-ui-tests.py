@@ -1,16 +1,25 @@
 """Run the documented console cases with Java 25 in an isolated data directory."""
 
+import argparse
 import datetime
+import hashlib
 import pathlib
 import queue
 import re
+import shutil
 import subprocess
-import sys
 import tempfile
 import threading
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-LABEL = sys.argv[1] if len(sys.argv) > 1 else 'ui-tests'
+arguments = argparse.ArgumentParser(description=__doc__)
+arguments.add_argument('session_name', nargs='?', default='ui-tests')
+arguments.add_argument('--jar', type=pathlib.Path, help='Test an existing JAR without rebuilding source.')
+options = arguments.parse_args()
+JAR = options.jar.resolve() if options.jar else None
+if JAR is not None and not JAR.is_file():
+    arguments.error(f'JAR file does not exist: {JAR}')
+LABEL = options.session_name
 if not re.fullmatch(r'[a-zA-Z0-9_-]+', LABEL):
     raise SystemExit('Use a session name containing letters, numbers, underscores, or hyphens.')
 OUT = ROOT / '_temp' / LABEL
@@ -20,8 +29,9 @@ CLASSES.mkdir(exist_ok=True)
 version = subprocess.run(['java', '-version'], capture_output=True, text=True, check=True)
 if not re.search(r'version "25[.\"]', version.stderr + version.stdout):
     raise SystemExit('The UI suite requires Java 25 on PATH.')
-subprocess.run(['javac', '--release', '25', '-encoding', 'UTF-8', '-d', str(CLASSES),
-                *map(str, (ROOT / 'src/main/java').rglob('*.java'))], check=True)
+if JAR is None:
+    subprocess.run(['javac', '--release', '25', '-encoding', 'UTF-8', '-d', str(CLASSES),
+                    *map(str, (ROOT / 'src/main/java').rglob('*.java'))], check=True)
 plan = (ROOT / 'test/ui-test-plan.md').read_text(encoding='utf-8')
 cases = re.split(r'^## Test Case ', plan, flags=re.M)[1:]
 separator = '_' * 60 + '\n'
@@ -54,9 +64,10 @@ def read_response():
 
 def start(work, case):
     global process, lines
+    target = ['-jar', 'ip.jar'] if JAR else ['-cp', str(CLASSES), 'ui.SamSquare']
     process = subprocess.Popen(['java', '-Dstdout.encoding=UTF-8', '-Dstderr.encoding=UTF-8',
                                 '-Duser.language=fr', '-Duser.country=FR',
-                                '-cp', str(CLASSES), 'ui.SamSquare'], cwd=work,
+                                *target], cwd=work,
                                stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                                stderr=subprocess.STDOUT, text=True, encoding='utf-8', bufsize=1)
     lines = queue.Queue()
@@ -78,6 +89,12 @@ def start(work, case):
 
 
 with tempfile.TemporaryDirectory(prefix='samsquare-ui-') as work:
+    if JAR:
+        # Run a copy from an empty folder, preserving the user's artifact and data.
+        copied_jar = pathlib.Path(work) / 'ip.jar'
+        shutil.copy2(JAR, copied_jar)
+        digest = hashlib.sha256(copied_jar.read_bytes()).hexdigest()
+        transcript.append(f'JAR {JAR}\nSHA-256 {digest}\n')
     task_file = pathlib.Path(work) / 'data' / 'samsquare.txt'
     count = 0
     try:

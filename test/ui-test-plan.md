@@ -11,6 +11,12 @@ Run the process in a fresh working directory with no `data/samsquare.txt`, so
 saved personal tasks do not affect the starting state. Compile and run using
 Java 25, preserving UTF-8 output for the banner.
 
+For a packaged release, run the same cases with
+`python test/run-ui-tests.py jar-tests --jar out/artifacts/ip_jar2/ip.jar`,
+replacing the JAR path if necessary. The runner copies that exact JAR into the
+fresh working directory and launches it with `java -jar ip.jar`; it does not
+rebuild the source. Expected responses and restart checks remain the same.
+
 The greeting appears exactly once before Test Case 1.
 
 Expected greeting:
